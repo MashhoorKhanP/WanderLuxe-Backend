@@ -42,6 +42,7 @@ class UserController {
       res.status(400).json(err.message);
     }
   }
+  
 }
 
 export default UserController;

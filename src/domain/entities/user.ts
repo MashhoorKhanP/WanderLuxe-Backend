@@ -3,7 +3,7 @@ interface IUser {
   firstName: string;
   lastName: string;
   email: string;
-  mobile?: number;
+  mobile?: string;
   password:string,
   profileImage?: string;
   isVerified?: boolean;

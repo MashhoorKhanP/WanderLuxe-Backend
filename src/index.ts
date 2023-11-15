@@ -1,20 +1,10 @@
+import { createServer } from './infrastructure/config/app';
+import connectDB from './infrastructure/config/db'
 import dotenv from 'dotenv';
 dotenv.config();
-import cors from 'cors';
-import connectDB from './infrastructure/config/db'
-import { createServer } from './infrastructure/config/app';
-const port = process.env.PORT || 5000
-
 const app = createServer();
-connectDB()
+const port = process.env.PORT || 6000
 
-
-app.get('/', (req, res) => {
-  res.send('Hello Worlddfsfadsf!')
-})
-
-
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+connectDB().then(() =>{
+  app?.listen(port, () => console.log(`Example app listening on port ${port}`));
+});

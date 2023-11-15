@@ -41,7 +41,7 @@ class GenerateEmail implements SendMail {
       subject:"One-Time Password (WanderLuxe)",
       html:mailData
     };
-    mailTransporter.sendMail(details,(error) =>{
+    mailTransporter.sendMail(details,(error: Error | null) =>{
       console.log("Mail sent successfully")
       if(error){
         return console.log(error.message)

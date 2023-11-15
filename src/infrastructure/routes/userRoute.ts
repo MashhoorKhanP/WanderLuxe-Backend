@@ -19,13 +19,11 @@ const email = new GenerateEmail();
 
 const userRepository = new UserRepository();
 
-
 const userCase = new UserUserCase(userRepository,encrypt,jwt);
 const controller = new UserController(userCase,email,otp);
 
 const router = express.Router();
 
 router.post('/signup',(req,res) => controller.signUp(req,res));
-
 
 export default router;
