@@ -4,8 +4,8 @@ interface IUser {
   lastName: string;
   email: string;
   mobile?: string;
-  password:string,
-  profileImage?: string;
+  password?:string,
+  profileImage: string;
   isVerified?: boolean;
   isBlocked?: boolean;
   wallet?:number | null;

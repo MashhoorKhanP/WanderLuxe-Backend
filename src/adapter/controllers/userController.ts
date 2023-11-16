@@ -20,7 +20,9 @@ class UserController {
 
       if (verifyUser.data.status === true && req.body.isGoogle) {
         let user = await this.userUseCase.verifyUser(req.body);
-        res.status(user.status).json(user.data);
+        if(user){
+          res.status(user.status).json(user.data);
+        }
 
       } else if (verifyUser.data.status === true) {
         
@@ -42,7 +44,23 @@ class UserController {
       res.status(400).json(err.message);
     }
   }
-  
+
+  async userVerification(req:Request , res: Response) {
+    try{
+      if(req.body.otp === req.app.locals.otp){
+        const user = await this.userUseCase.verifyUser(req.app.locals.userData);
+        if(user){
+          req.app.locals.userData = null;
+          res.status(user.status).json(user.data);
+        }
+      }else{
+        res.status(400).json({status:false, message:'Invalid otp'});
+      }
+    }catch(error){
+      const typedError: Error = error as Error;
+      res.status(400).json(typedError.message);
+    }
+  }
 }
 
 export default UserController;

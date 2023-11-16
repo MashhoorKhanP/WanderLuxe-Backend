@@ -40,13 +40,21 @@ class UserUserCase {
 
   async verifyUser(user: IUser) {
     console.log(user)
-    const hashedPassword = await this.Encrypt.generateHash(user.password);
-    const newUser = { ...user, password: hashedPassword };
-    await this.UserRepository.save(newUser);
-    return {
-      status: 200,
-      data: { status: true, message: "User registered successfully" },
-    };
+    let token = '';
+    if(user.password){
+      const hashedPassword = await this.Encrypt.generateHash(user.password);
+      const newUser = { ...user, password: hashedPassword };
+      if(user._id) token = this.JWTToken.generateToken(user._id,user.firstName,user.lastName,user.email,user.profileImage)
+      await this.UserRepository.save(newUser);
+      return {
+        status: 200,
+        data: { status: true, message: "User registered successfully",
+        result:{
+          _id:user._id,firstName:user.firstName,lastName:user.lastName,
+          email:user.email,profileImage:user.profileImage
+        } },
+      };
+    }
   }
 }
 

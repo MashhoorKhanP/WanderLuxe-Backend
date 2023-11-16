@@ -8,6 +8,7 @@ import UserUserCase from "../../useCases/userUseCase";
 import UserController from "../../adapter/controllers/userController";
 import GenerateOTP from "../services/generateOtp";
 import GenerateEmail from "../services/sendMail";
+import googleAuth from "../middlewares/googleAuth";
 
 
 
@@ -24,6 +25,6 @@ const controller = new UserController(userCase,email,otp);
 
 const router = express.Router();
 
-router.post('/signup',(req,res) => controller.signUp(req,res));
+router.post('/signup',googleAuth,(req,res) => controller.signUp(req,res));
 
 export default router;
