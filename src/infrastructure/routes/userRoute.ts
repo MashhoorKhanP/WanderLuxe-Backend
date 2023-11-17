@@ -26,5 +26,7 @@ const controller = new UserController(userCase,email,otp);
 const router = express.Router();
 
 router.post('/signup',googleAuth,(req,res) => controller.signUp(req,res));
+router.post('/verify-otp',googleAuth,(req,res) => controller.userVerification(req,res));
+
 
 export default router;

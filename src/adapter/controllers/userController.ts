@@ -20,6 +20,7 @@ class UserController {
 
       if (verifyUser.data.status === true && req.body.isGoogle) {
         let user = await this.userUseCase.verifyUser(req.body);
+        console.log('controller 23 line',user);
         if(user){
           res.status(user.status).json(user.data);
         }
@@ -29,7 +30,7 @@ class UserController {
         req.app.locals.userData = req.body;
         const otp = this.GenerateOTP.generateOtp();
         req.app.locals.otp = otp;
-        this.GenerateEmail.sendMail(req.body.email,otp);
+        //this.GenerateEmail.sendMail(req.body.email,otp);
         console.log(otp);
         setTimeout(() => {
           req.app.locals.otp = this.GenerateOTP.generateOtp()
@@ -51,6 +52,7 @@ class UserController {
         const user = await this.userUseCase.verifyUser(req.app.locals.userData);
         if(user){
           req.app.locals.userData = null;
+          req.app.locals.otp =null;
           res.status(user.status).json(user.data);
         }
       }else{
