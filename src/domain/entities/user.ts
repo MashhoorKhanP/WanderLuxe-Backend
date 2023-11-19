@@ -1,10 +1,10 @@
 interface IUser {
-  _id?: string;
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
   mobile?: string;
-  password?:string,
+  password:string,
   profileImage: string;
   isVerified?: boolean;
   isBlocked?: boolean;

@@ -39,20 +39,88 @@ class UserUserCase {
   }
 
   async verifyUser(user: IUser) {
-    console.log(user)
-    let token = '';
-    if(user.password){
+    console.log(user);
+    let token = "";
+    if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
-      if(user._id) token = this.JWTToken.generateToken(user._id,user.firstName,user.lastName,user.email,user.profileImage)
+      if (user._id)
+        token = this.JWTToken.generateToken(
+          user._id,
+          user.firstName,
+          user.lastName,
+          user.email,
+          user.profileImage
+        );
       await this.UserRepository.save(newUser);
       return {
         status: 200,
-        data: { status: true, message: "User registered successfully",
-        result:{
-          _id:user._id,firstName:user.firstName,lastName:user.lastName,
-          email:user.email,profileImage:user.profileImage
-        } },
+        data: {
+          status: true,
+          message: "User registered successfully",
+          result: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            profileImage: user.profileImage,
+          },
+        },
+      };
+    }
+  }
+
+  async login(user: IUser) {
+    const userData = await this.UserRepository.findByEmail(user.email);
+    let token = "";
+    if (userData) {
+      if (userData?.isBlocked) {
+        return {
+          status: 400,
+          data: {
+            message: "You have been blocked by admin!",
+            token: "",
+          },
+        };
+      }
+      const passwordMatch = await this.Encrypt.compare(
+        user.password,
+        userData.password
+      );
+
+      if (passwordMatch) {
+        const userId = userData?._id;
+        if (userId)
+          token = this.JWTToken.generateToken(
+            userData._id,
+            userData.email,
+            userData.firstName,
+            userData.lastName,
+            userData.profileImage
+          );
+        return {
+          status: 200,
+          data: {
+            message: userData,
+            token,
+          },
+        };
+      } else {
+        return {
+          status: 400,
+          data: {
+            message: "Invalid email or password!",
+            token,
+          },
+        };
+      }
+    } else {
+      return {
+        status: 400,
+        data: {
+          message: "Invalid email or password!",
+          token,
+        },
       };
     }
   }

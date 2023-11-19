@@ -1,11 +1,23 @@
 import { NextFunction, Request, Response } from 'express';
 import {OAuth2Client, TokenPayload} from 'google-auth-library';
-import IUser from '../../domain/entities/user';
+import IGoogleAuthUser from '../../domain/entities/googleAuth';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import UserRepository from '../repositories/userRepository';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 interface AuthenticatedRequest extends Request {
-  user?: IUser;
+  user?: IGoogleAuthUser;
+}
+
+const userRepo = new UserRepository();
+
+declare global{
+  namespace Express {
+    interface Request {
+      userId? : string;
+    }
+  }
 }
 
 const googleAuth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -33,6 +45,30 @@ const googleAuth = async (req: AuthenticatedRequest, res: Response, next: NextFu
       console.log("googleAuth successful")
     } else {
       // To do: verify our custom jwt token
+      // let token; 
+      // token = req.cookies.userJWT;
+      // console.log(token);
+      // if(token){
+      //   try{
+      //     const decoded = jwt.verify(token!,process.env.JWT_SECRET as string) as JwtPayload;
+          
+      //     const user = await userRepo.findById(decoded.userId as string);
+      //     if(user){
+      //       req.userId = user._id;
+      //       if(user.isBlocked){
+      //         return res.status(401).json({message: 'You are blocked by admin!'});
+      //       }else{
+      //         next();
+      //       }
+      //     }else{
+      //       return res.status(401).json({message:'Not authorized,invalid token'});
+      //     }
+      //   }catch(error){
+      //     return res.status(401).json({message:'Not authorized,invalid token'});
+      //   }
+      // }else{
+      //   return res.status(401).json({message:'Not authorized,invalid token'});
+      // }
     }
 
     next();

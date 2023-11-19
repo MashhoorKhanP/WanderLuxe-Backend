@@ -63,6 +63,49 @@ class UserController {
       res.status(400).json(typedError.message);
     }
   }
+  
+  async resendOtp(req:Request, res:Response) {
+  try{
+    const otp = this.GenerateOTP.generateOtp();
+    req.app.locals.otp = otp;
+    this.GenerateEmail.sendMail(req.app.locals.userData.email, otp);
+    console.log(otp);
+
+    setTimeout(()=>{
+      req.app.locals.otp = this.GenerateOTP.generateOtp();
+    },3*6000);
+    res.status(200).json({message:'Otp has been sent!(resendOtp,backend,userController)'});
+
+  }catch(error){
+    const typedError = error as Error;
+    res.status(400).json(typedError.message);
+  }
 }
+
+async login(req:Request, res:Response){
+  try{
+    const user = await this.userUseCase.login(req.body);
+    console.log('Entered inside login Controller',user)
+    console.log(typeof user.data.token);
+    if(user.data.token){
+      console.log('entered inside to set token')
+      res.cookie('userJWT',user.data.token,{
+        httpOnly:true,
+        sameSite:'strict',
+        secure:process.env.NODE_ENV !== 'development',
+        maxAge : 30 * 24 * 60 * 60 * 1000
+      });
+    }
+    res.status(user.status).json({
+      success:true,
+      result:{...user.data}
+    });
+  }catch(error){
+    const typedError = error as Error;;
+    res.status(400).json({typedError});
+  }
+}
+
+};
 
 export default UserController;

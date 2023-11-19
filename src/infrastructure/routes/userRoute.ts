@@ -11,8 +11,6 @@ import GenerateEmail from "../services/sendMail";
 import googleAuth from "../middlewares/googleAuth";
 
 
-
-
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
 const otp = new GenerateOTP();
@@ -27,6 +25,8 @@ const router = express.Router();
 
 router.post('/signup',googleAuth,(req,res) => controller.signUp(req,res));
 router.post('/verify-otp',googleAuth,(req,res) => controller.userVerification(req,res));
+router.post('/resend-otp',googleAuth,(req,res)=>controller.resendOtp(req,res));
+router.post('/login',googleAuth,(req,res)=>controller.login(req,res));
 
 
 export default router;

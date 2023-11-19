@@ -8,7 +8,7 @@ const userSchema: Schema = new Schema<IUser & Document>({
   email: { type: String, required: true,unique:true },
   password:{type: String, required: true},
   mobile: { type: String,required:true,unique:true},
-  profileImage: { type: String},
+  profileImage: { type: String,default:''},
   isVerified: { type: Boolean,default:false },
   isBlocked: { type: Boolean,default:false },
   isGoogle:{type:Boolean,default:false},
