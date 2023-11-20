@@ -24,6 +24,7 @@ const controller = new UserController(userCase,email,otp);
 const router = express.Router();
 
 router.post('/signup',googleAuth,(req,res) => controller.signUp(req,res));
+router.post('/google-signup',googleAuth,(req,res) =>controller.signUp(req,res));
 router.post('/verify-otp',googleAuth,(req,res) => controller.userVerification(req,res));
 router.post('/resend-otp',googleAuth,(req,res)=>controller.resendOtp(req,res));
 router.post('/login',googleAuth,(req,res)=>controller.login(req,res));

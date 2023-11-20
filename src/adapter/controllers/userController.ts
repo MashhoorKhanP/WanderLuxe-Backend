@@ -17,7 +17,7 @@ class UserController {
   async signUp(req: Request, res: Response) {
     try {
       const verifyUser = await this.userUseCase.signUp(req.body.email);
-
+      console.log('Entered inside signUp Controller',verifyUser)
       if (verifyUser.data.status === true && req.body.isGoogle) {
         let user = await this.userUseCase.verifyUser(req.body);
         console.log('controller 23 line',user);
@@ -38,11 +38,11 @@ class UserController {
 
         res.status(verifyUser.status).json(verifyUser.data);
       }else {
-        res.status(verifyUser.status).json(verifyUser.data);
+        res.status(400).json({success:false,result:{...verifyUser.data}}); // This line for toastify error in frontend
       }
     } catch (error) {
-      const err: Error = error as Error;
-      res.status(400).json(err.message);
+      const typedError = error as Error;
+      res.status(400).json({success:false,error:typedError.message});
     }
   }
 
@@ -86,7 +86,7 @@ async login(req:Request, res:Response){
   try{
     const user = await this.userUseCase.login(req.body);
     console.log('Entered inside login Controller',user)
-    console.log(typeof user.data.token);
+    console.log(user.data.token);
     if(user.data.token){
       console.log('entered inside to set token')
       res.cookie('userJWT',user.data.token,{
@@ -95,14 +95,16 @@ async login(req:Request, res:Response){
         secure:process.env.NODE_ENV !== 'development',
         maxAge : 30 * 24 * 60 * 60 * 1000
       });
+      console.log('set cookie ended')
     }
+    
     res.status(user.status).json({
       success:true,
       result:{...user.data}
     });
   }catch(error){
-    const typedError = error as Error;;
-    res.status(400).json({typedError});
+    const typedError = error as Error;
+    res.status(400).json({success:false,error:typedError.message});
   }
 }
 

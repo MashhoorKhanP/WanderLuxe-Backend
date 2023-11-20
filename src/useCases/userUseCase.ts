@@ -25,6 +25,7 @@ class UserUserCase {
         status: 400,
         data: {
           status: false,
+          success:false,
           message: "User already exists!",
         },
       };
@@ -33,17 +34,19 @@ class UserUserCase {
       status: 200,
       data: {
         status: true,
+        success:true,
         message: "Verification OTP sent to your email",
       },
     };
   }
 
   async verifyUser(user: IUser) {
-    console.log(user);
+    console.log('useCase',user);
     let token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
+      console.log('newUser',newUser)
       if (user._id)
         token = this.JWTToken.generateToken(
           user._id,
@@ -53,10 +56,12 @@ class UserUserCase {
           user.profileImage
         );
       await this.UserRepository.save(newUser);
+      
       return {
         status: 200,
         data: {
           status: true,
+          success:true,
           message: "User registered successfully",
           result: {
             _id: user._id,
@@ -78,6 +83,7 @@ class UserUserCase {
         return {
           status: 400,
           data: {
+            success:false,
             message: "You have been blocked by admin!",
             token: "",
           },
@@ -101,23 +107,28 @@ class UserUserCase {
         return {
           status: 200,
           data: {
+            success:true,
             message: userData,
             token,
           },
         };
       } else {
+        console.log('109');
         return {
           status: 400,
           data: {
+            success:false,
             message: "Invalid email or password!",
             token,
           },
         };
       }
     } else {
+      console.log('119');
       return {
         status: 400,
         data: {
+          success:false,
           message: "Invalid email or password!",
           token,
         },
