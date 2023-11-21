@@ -20,24 +20,63 @@ class UserUserCase {
 
   async signUp(email: string) {
     const userExists = await this.UserRepository.findByEmail(email);
+  
     if (userExists) {
+      if (userExists.isGoogle) {
+        // If the user is blocked, return an error
+        if (userExists?.isBlocked) {
+          return {
+            status: 400,
+            data: {
+              success: false,
+              message: "You have been blocked by admin!",
+              token: "",
+            },
+          };
+        }
+  
+        // If the user is not blocked, generate a token and return success
+        const userId = userExists?._id;
+        if (userId) {
+          const token = this.JWTToken.generateToken(
+            userExists._id,
+            userExists.email,
+            userExists.firstName,
+            userExists.lastName,
+            userExists.profileImage
+          );
+  
+          return {
+            status: 200,
+            data: {
+              success: true,
+              message: userExists,
+              token,
+            },
+          };
+        }
+      } else {
+        // If the user is not a Google user, return an error
+        return {
+          status: 400,
+          data: {
+            status: false,
+            success: false,
+            message: "User already exists!",
+          },
+        };
+      }
+    } else {
+      // If the user doesn't exist, return success with a verification message
       return {
-        status: 400,
+        status: 200,
         data: {
-          status: false,
-          success:false,
-          message: "User already exists!",
+          status: true,
+          success: true,
+          message: "Verification OTP sent to your email",
         },
       };
     }
-    return {
-      status: 200,
-      data: {
-        status: true,
-        success:true,
-        message: "Verification OTP sent to your email",
-      },
-    };
   }
 
   async verifyUser(user: IUser) {

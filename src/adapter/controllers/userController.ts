@@ -17,32 +17,46 @@ class UserController {
   async signUp(req: Request, res: Response) {
     try {
       const verifyUser = await this.userUseCase.signUp(req.body.email);
-      console.log('Entered inside signUp Controller',verifyUser)
-      if (verifyUser.data.status === true && req.body.isGoogle) {
-        let user = await this.userUseCase.verifyUser(req.body);
-        console.log('controller 23 line',user);
-        if(user){
-          res.status(user.status).json(user.data);
+      console.log('Entered inside signUp Controller', verifyUser);
+
+      if(verifyUser?.data?.message && typeof verifyUser.data.message === 'object' && 'createdAt' in verifyUser.data.message){
+        return (res.status(verifyUser.status).json({
+          success:true,
+          result:{...verifyUser.data}
+        })
+        )
+      }
+      if (verifyUser && verifyUser.data) {
+        if (verifyUser.data.status === true && req.body.isGoogle) {
+          let user = await this.userUseCase.verifyUser(req.body);
+          console.log('controller 23 line', user);
+          if (user) {
+            res.status(user.status).json({...user.data});
+          }
+        } else if (verifyUser.data.status === true) {
+          req.app.locals.userData = req.body;
+          const otp = this.GenerateOTP.generateOtp();
+          req.app.locals.otp = otp;
+          this.GenerateEmail.sendMail(req.body.email,otp);
+          console.log(otp);
+  
+          setTimeout(() => {
+            req.app.locals.otp = this.GenerateOTP.generateOtp();
+          }, 3 * 60000);
+  
+          res.status(verifyUser.status).json(verifyUser.data);
+        } else {
+          res.status(400).json({
+            success: false,
+            result: { ...(verifyUser.data || {}) }, // Ensure that verifyUser.data is defined
+          });
         }
-
-      } else if (verifyUser.data.status === true) {
-        
-        req.app.locals.userData = req.body;
-        const otp = this.GenerateOTP.generateOtp();
-        req.app.locals.otp = otp;
-        //this.GenerateEmail.sendMail(req.body.email,otp);
-        console.log(otp);
-        setTimeout(() => {
-          req.app.locals.otp = this.GenerateOTP.generateOtp()
-        }, 3 * 60000);
-
-        res.status(verifyUser.status).json(verifyUser.data);
-      }else {
-        res.status(400).json({success:false,result:{...verifyUser.data}}); // This line for toastify error in frontend
+      } else {
+        res.status(400).json({ success: false, result: {} });
       }
     } catch (error) {
       const typedError = error as Error;
-      res.status(400).json({success:false,error:typedError.message});
+      res.status(400).json({ success: false, error: typedError.message });
     }
   }
 
@@ -74,7 +88,7 @@ class UserController {
     setTimeout(()=>{
       req.app.locals.otp = this.GenerateOTP.generateOtp();
     },3*6000);
-    res.status(200).json({message:'Otp has been sent!(resendOtp,backend,userController)'});
+    res.status(200).json({message:'Otp has been sent!(/backend/userController/resendOtp)'});
 
   }catch(error){
     const typedError = error as Error;
@@ -104,6 +118,7 @@ async login(req:Request, res:Response){
     });
   }catch(error){
     const typedError = error as Error;
+    console.error('Error setting cookie:',typedError);
     res.status(400).json({success:false,error:typedError.message});
   }
 }

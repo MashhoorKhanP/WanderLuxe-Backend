@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import {OAuth2Client, TokenPayload} from 'google-auth-library';
 import IGoogleAuthUser from '../../domain/entities/googleAuth';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import UserRepository from '../repositories/userRepository';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -56,18 +55,18 @@ const googleAuth = async (req: AuthenticatedRequest, res: Response, next: NextFu
       //     if(user){
       //       req.userId = user._id;
       //       if(user.isBlocked){
-      //         return res.status(401).json({message: 'You are blocked by admin!'});
+      //         return res.status(401).json({success:false,message: 'You are blocked by admin!'});
       //       }else{
       //         next();
       //       }
       //     }else{
-      //       return res.status(401).json({message:'Not authorized,invalid token'});
+      //       return res.status(401).json({success:false,message:'Not authorized,invalid token'});
       //     }
       //   }catch(error){
-      //     return res.status(401).json({message:'Not authorized,invalid token'});
+      //     return res.status(401).json({success:false,message:'Not authorized,invalid token'});
       //   }
       // }else{
-      //   return res.status(401).json({message:'Not authorized,invalid token'});
+      //   return res.status(401).json({success:false,message:'Not authorized,invalid token'});
       // }
     }
 
