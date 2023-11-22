@@ -81,12 +81,12 @@ class UserUserCase {
 
   async verifyUser(user: IUser) {
     console.log('useCase',user);
-    let token = "";
+    var token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
       console.log('newUser',newUser)
-      if (user._id)
+      if (user)
         token = this.JWTToken.generateToken(
           user._id,
           user.firstName,
@@ -101,14 +101,13 @@ class UserUserCase {
         data: {
           status: true,
           success:true,
-          message: "User registered successfully",
-          result: {
-            _id: user._id,
+          message: {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             profileImage: user.profileImage,
           },
+          token,
         },
       };
     }
