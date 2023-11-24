@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import {OAuth2Client, TokenPayload} from 'google-auth-library';
 import IGoogleAuthUser from '../../domain/entities/googleAuth';
 import UserRepository from '../repositories/userRepository';
+import jwt, { JwtPayload } from 'jsonwebtoken'
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

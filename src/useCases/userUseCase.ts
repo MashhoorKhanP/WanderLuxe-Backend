@@ -84,7 +84,7 @@ class UserUserCase {
     var token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
-      const newUser = { ...user, password: hashedPassword };
+      const newUser = { ...user, password: hashedPassword,fullName:user.firstName + user.lastName };
       console.log('newUser',newUser)
       if (user)
         token = this.JWTToken.generateToken(
@@ -172,6 +172,29 @@ class UserUserCase {
         },
       };
     }
+  }
+
+  async updateProfile(id:string ,reqBody:object){
+    const updatedUser = await this.UserRepository.findByIdAndUpdateProfile(id,reqBody);
+    if(updatedUser){
+      console.log('updated user',updatedUser);
+      return {
+        status: 200,
+        data: {
+          success:true,
+          message: updatedUser,
+        },
+      };
+    }else{
+      return {
+        status: 400,
+        data: {
+          success:false,
+          message: "Updating user profile failed!",
+        },
+      };
+    }
+    
   }
 }
 

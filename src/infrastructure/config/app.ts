@@ -11,11 +11,9 @@ dotenv.config();
 export const createServer = () =>{
   try{
     const app = express();
-    
-
     app.use(cors({
       origin: process.env.CLIENT_URL || '', // Allow requests from CLIENT_URL
-      methods: 'GET, POST, PUT, DELETE, OPTIONS',
+      methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
       allowedHeaders: 'X-Requested-With, Content-Type, Authorization',
       credentials:true
     }));

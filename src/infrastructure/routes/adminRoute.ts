@@ -11,14 +11,16 @@ const encrypt = new Encrypt();
 const jwt = new JWTToken();
 
 const adminRepository = new AdminRepository();
-// const userRepository = new UserRepository();
+const userRepository = new UserRepository();
 
-const adminCase = new AdminUseCase(adminRepository,encrypt,jwt,/**userRepository*/);
+const adminCase = new AdminUseCase(adminRepository,userRepository,encrypt,jwt);
 
 const controller = new AdminController(adminCase);
 
 const router = express.Router();
 
 router.post('/login',(req,res) => controller.login(req,res));
+router.get('/users',(req,res)=> controller.getUsers(req,res));
+router.patch('/users/update-user/:userId',(req,res)=> controller.updateUsers(req,res));
 
 export default router;

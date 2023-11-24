@@ -29,6 +29,36 @@ class AdminController {
     }
   }
 
+  async getUsers(req:Request, res:Response){
+    try{
+      const users = await this.adminUseCase.getUsers();
+      res.status(users.status).json({
+        success:true,
+        result:{...users.data}
+      })
+    }catch(error){
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async updateUsers(req:Request,res:Response){
+    try{
+      const userId = req.params.userId as string;
+      const {isVerified,isBlocked}= req.body;
+      console.log(req.body);
+      const updatedUser = await this.adminUseCase.updateUser(userId,isVerified,isBlocked);
+      res.status(updatedUser.status as number).json({
+        success:true,
+        result:{updatedUser}
+      })
+    }catch(error){
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+
 
 }
 

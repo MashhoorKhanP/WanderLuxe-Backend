@@ -5,6 +5,7 @@ import IUser from "../../domain/entities/user";
 const userSchema: Schema = new Schema<IUser & Document>({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  fullName:{type: String},
   email: { type: String, required: true,unique:true },
   password:{type: String, required: true},
   mobile: { type: String},

@@ -23,11 +23,12 @@ const controller = new UserController(userCase,email,otp);
 
 const router = express.Router();
 
-router.post('/signup',googleAuth,(req,res) => controller.signUp(req,res));
-router.post('/google-signup',googleAuth,(req,res) =>controller.signUp(req,res));
-router.post('/verify-otp',googleAuth,(req,res) => controller.userVerification(req,res));
-router.post('/resend-otp',googleAuth,(req,res)=>controller.resendOtp(req,res));
-router.post('/login',googleAuth,(req,res)=>controller.login(req,res));
+router.post('/signup',(req,res) => controller.signUp(req,res));
+router.post('/google-signup',(req,res) =>controller.signUp(req,res));
+router.post('/verify-otp',(req,res) => controller.userVerification(req,res));
+router.post('/resend-otp',(req,res)=>controller.resendOtp(req,res));
+router.post('/login',(req,res)=>controller.login(req,res));
+router.patch('/profile/:userId',(req,res) => controller.updateProfile(req,res)); // todo: uncomment and check the jwt auth in gooleAuth
 
 
 export default router;

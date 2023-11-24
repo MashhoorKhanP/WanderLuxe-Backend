@@ -20,18 +20,18 @@ type UserType = {
 
 class AdminUseCase {
   private AdminRepository: AdminRepository;
-  // private UserRepository : UserRepository;
+  private UserRepository : UserRepository;
   private Encrypt: Encrypt;
   private JWTToken: JWTToken;
 
   constructor(
     AdminRepository: AdminRepository,
-    // UserRepository: UserRepository,
+    UserRepository: UserRepository,
     Encrypt: Encrypt,
     JWTToken: JWTToken
   ) {
     this.AdminRepository = AdminRepository;
-    // this.UserRepository = UserRepository;
+    this.UserRepository = UserRepository;
     this.Encrypt = Encrypt;
     this.JWTToken = JWTToken;
   }
@@ -80,7 +80,42 @@ class AdminUseCase {
       };
     }
   }
+
+  async getUsers(){
+    const usersList = await this.UserRepository.findAllUsers();
+    return {
+      status:200,
+      data:{
+        success:true,
+        message:usersList,
+      }
+      
+    }
+  }
+
+  async updateUser(userId:string,isVerified:boolean,isBlocked:boolean,){
+    const updateUser = await this.UserRepository.findByIdAndUpdate(userId,isVerified,isBlocked );
+    console.log('updatedUser from adminUseCase',updateUser)
+    if(updateUser){
+        return {
+          status:200,
+          data:{
+            success:true,
+            message:updateUser._id
+          }
+        }
+    }else{
+      return {
+        data: {
+          success:false,
+          message: "User not found",
+        },
+      }
+    }
+  }
 }
+
+
 
 
 export default AdminUseCase;

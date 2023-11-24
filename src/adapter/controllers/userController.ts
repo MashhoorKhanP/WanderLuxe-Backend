@@ -123,6 +123,23 @@ async login(req:Request, res:Response){
   }
 }
 
+async updateProfile(req:Request,res:Response){
+  try{
+    const userId = req.params.userId;
+    console.log('updateProfile,userId',userId)
+    const updatedUser = await this.userUseCase.updateProfile(userId,req.body);
+    console.log('updatedUser from controller',updatedUser)
+    res.status(200).json({
+      success:true,
+      result:{...updatedUser.data}
+    })
+   
+  }catch(error){
+    const typedError = error as Error;
+    res.status(400).json({success:false,error:typedError.message});
+  }
+}
+
 };
 
 export default UserController;

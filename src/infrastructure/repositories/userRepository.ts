@@ -23,6 +23,18 @@ class UserRepository implements UserRepo{
       const users = await UserModel.find({}).select('-password');
       return users;
   }
+
+  async findByIdAndUpdate(_id: string,isVerified: boolean, isBlocked: boolean): Promise<IUser | null> {
+    const user = await UserModel.findByIdAndUpdate(_id,
+        { isVerified, isBlocked },
+        { new: true });
+    return user;
+  }
+
+  async findByIdAndUpdateProfile(_id:string,reqBody:object):Promise<IUser | null>{
+    const updatedUser = await UserModel.findByIdAndUpdate(_id,reqBody,{new:true});
+    return updatedUser;
+  }
 }
 
 export default UserRepository;
