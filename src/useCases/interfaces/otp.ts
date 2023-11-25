@@ -1,4 +1,4 @@
-interface OTP{
-  generateOtp():number;
+interface OTP {
+  generateOtp(): number;
 }
 export default OTP;

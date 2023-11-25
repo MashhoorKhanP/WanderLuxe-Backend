@@ -20,7 +20,7 @@ type UserType = {
 
 class AdminUseCase {
   private AdminRepository: AdminRepository;
-  private UserRepository : UserRepository;
+  private UserRepository: UserRepository;
   private Encrypt: Encrypt;
   private JWTToken: JWTToken;
 
@@ -51,71 +51,71 @@ class AdminUseCase {
           adminData.profileImage,
           adminData.lastName
         );
-        return{
-          status:200,
-          data:{
-            success:true,
-            message:adminData,
+        return {
+          status: 200,
+          data: {
+            success: true,
+            message: adminData,
             token,
-          }
+          },
         };
-      }else{
-        return{
+      } else {
+        return {
           status: 400,
           data: {
-            success:false,
+            success: false,
             message: "Invalid email or password!",
-            token:null
+            token: null,
           },
         };
       }
-    }else{
-      return{
+    } else {
+      return {
         status: 400,
         data: {
-          success:false,
+          success: false,
           message: "Invalid email or password!",
-          token:null
+          token: null,
         },
       };
     }
   }
 
-  async getUsers(){
+  async getUsers() {
     const usersList = await this.UserRepository.findAllUsers();
     return {
-      status:200,
-      data:{
-        success:true,
-        message:usersList,
-      }
-      
-    }
+      status: 200,
+      data: {
+        success: true,
+        message: usersList,
+      },
+    };
   }
 
-  async updateUser(userId:string,isVerified:boolean,isBlocked:boolean,){
-    const updateUser = await this.UserRepository.findByIdAndUpdate(userId,isVerified,isBlocked );
-    console.log('updatedUser from adminUseCase',updateUser)
-    if(updateUser){
-        return {
-          status:200,
-          data:{
-            success:true,
-            message:updateUser._id
-          }
-        }
-    }else{
+  async updateUser(userId: string, isVerified: boolean, isBlocked: boolean) {
+    const updateUser = await this.UserRepository.findByIdAndUpdate(
+      userId,
+      isVerified,
+      isBlocked
+    );
+    console.log("updatedUser from adminUseCase", updateUser);
+    if (updateUser) {
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: updateUser._id,
+        },
+      };
+    } else {
       return {
         data: {
-          success:false,
+          success: false,
           message: "User not found",
         },
-      }
+      };
     }
   }
 }
-
-
-
 
 export default AdminUseCase;

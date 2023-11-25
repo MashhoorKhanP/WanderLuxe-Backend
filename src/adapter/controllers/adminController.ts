@@ -1,4 +1,4 @@
-import { Request,Response } from "express";
+import { Request, Response } from "express";
 import AdminUseCase from "../../useCases/adminUseCase";
 
 class AdminController {
@@ -10,7 +10,7 @@ class AdminController {
   async login(req: Request, res: Response) {
     try {
       const admin = await this.adminUseCase.login(req.body);
-      console.log('Entered inside admin controller admin',admin)
+      console.log("Entered inside admin controller admin", admin);
       if (admin.data.token) {
         res.cookie("adminJWT", admin.data.token, {
           httpOnly: true,
@@ -29,37 +29,38 @@ class AdminController {
     }
   }
 
-  async getUsers(req:Request, res:Response){
-    try{
+  async getUsers(req: Request, res: Response) {
+    try {
       const users = await this.adminUseCase.getUsers();
       res.status(users.status).json({
-        success:true,
-        result:{...users.data}
-      })
-    }catch(error){
+        success: true,
+        result: { ...users.data },
+      });
+    } catch (error) {
       const typedError = error as Error;
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
 
-  async updateUsers(req:Request,res:Response){
-    try{
+  async updateUsers(req: Request, res: Response) {
+    try {
       const userId = req.params.userId as string;
-      const {isVerified,isBlocked}= req.body;
+      const { isVerified, isBlocked } = req.body;
       console.log(req.body);
-      const updatedUser = await this.adminUseCase.updateUser(userId,isVerified,isBlocked);
+      const updatedUser = await this.adminUseCase.updateUser(
+        userId,
+        isVerified,
+        isBlocked
+      );
       res.status(updatedUser.status as number).json({
-        success:true,
-        result:{updatedUser}
-      })
-    }catch(error){
+        success: true,
+        result: { updatedUser },
+      });
+    } catch (error) {
       const typedError = error as Error;
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
-
-
-
 }
 
 export default AdminController;

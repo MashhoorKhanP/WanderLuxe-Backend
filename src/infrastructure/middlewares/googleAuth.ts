@@ -52,7 +52,7 @@ const googleAuth = async (req: AuthenticatedRequest, res: Response, next: NextFu
       //   try{
       //     const decoded = jwt.verify(token!,process.env.JWT_SECRET as string) as JwtPayload;
           
-      //     const user = await userRepo.findById(decoded.userId as string);
+      //     const user = await userRepo.findById(decoded._id as string);
       //     if(user){
       //       req.userId = user._id;
       //       if(user.isBlocked){

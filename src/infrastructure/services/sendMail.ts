@@ -25,28 +25,28 @@ class GenerateEmail implements SendMail {
       </html>
   `;
     let mailTransporter = nodemailer.createTransport({
-      host:"smtp.gmail.com",
-      port:587,
+      host: "smtp.gmail.com",
+      port: 587,
       secure: false,
       requireTLS: true,
       auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSKEY
-      }
+        user: process.env.EMAIL,
+        pass: process.env.PASSKEY,
+      },
     });
 
     let details = {
-      from:process.env.EMAIL,
-      to:email,
-      subject:"One-Time Password (WanderLuxe)",
-      html:mailData
+      from: process.env.EMAIL,
+      to: email,
+      subject: "One-Time Password (WanderLuxe)",
+      html: mailData,
     };
-    mailTransporter.sendMail(details,(error: Error | null) =>{
-      console.log("Mail sent successfully")
-      if(error){
-        return console.log(error.message)
+    mailTransporter.sendMail(details, (error: Error | null) => {
+      console.log("Mail sent successfully");
+      if (error) {
+        return console.log(error.message);
       }
-    })
+    });
   }
 }
 

@@ -1,7 +1,7 @@
-interface IAuth{
-  _id?:string,
-  email:string,
-  password:string
+interface IAuth {
+  _id?: string;
+  email: string;
+  password: string;
 }
 
-export default IAuth
+export default IAuth;

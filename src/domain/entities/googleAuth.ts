@@ -1,4 +1,4 @@
-interface IGoogleAuthUser{
+interface IGoogleAuthUser {
   _id: string;
   firstName: string;
   lastName: string;

@@ -20,7 +20,7 @@ class UserUserCase {
 
   async signUp(email: string) {
     const userExists = await this.UserRepository.findByEmail(email);
-  
+
     if (userExists) {
       if (userExists.isGoogle) {
         // If the user is blocked, return an error
@@ -34,7 +34,7 @@ class UserUserCase {
             },
           };
         }
-  
+
         // If the user is not blocked, generate a token and return success
         const userId = userExists?._id;
         if (userId) {
@@ -45,7 +45,7 @@ class UserUserCase {
             userExists.lastName,
             userExists.profileImage
           );
-  
+
           return {
             status: 200,
             data: {
@@ -80,12 +80,12 @@ class UserUserCase {
   }
 
   async verifyUser(user: IUser) {
-    console.log('useCase',user);
+    console.log("useCase", user);
     var token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
-      const newUser = { ...user, password: hashedPassword,fullName:user.firstName + user.lastName };
-      console.log('newUser',newUser)
+      const newUser = { ...user, password: hashedPassword };
+      console.log("newUser", newUser);
       if (user)
         token = this.JWTToken.generateToken(
           user._id,
@@ -95,12 +95,12 @@ class UserUserCase {
           user.profileImage
         );
       await this.UserRepository.save(newUser);
-      
+
       return {
         status: 200,
         data: {
           status: true,
-          success:true,
+          success: true,
           message: {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -121,7 +121,7 @@ class UserUserCase {
         return {
           status: 400,
           data: {
-            success:false,
+            success: false,
             message: "You have been blocked by admin!",
             token: "",
           },
@@ -145,28 +145,28 @@ class UserUserCase {
         return {
           status: 200,
           data: {
-            success:true,
+            success: true,
             message: userData,
             token,
           },
         };
       } else {
-        console.log('109');
+        console.log("109");
         return {
           status: 400,
           data: {
-            success:false,
+            success: false,
             message: "Invalid email or password!",
             token,
           },
         };
       }
     } else {
-      console.log('119');
+      console.log("119");
       return {
         status: 400,
         data: {
-          success:false,
+          success: false,
           message: "Invalid email or password!",
           token,
         },
@@ -174,27 +174,29 @@ class UserUserCase {
     }
   }
 
-  async updateProfile(id:string ,reqBody:object){
-    const updatedUser = await this.UserRepository.findByIdAndUpdateProfile(id,reqBody);
-    if(updatedUser){
-      console.log('updated user',updatedUser);
+  async updateProfile(id: string, reqBody: object) {
+    const updatedUser = await this.UserRepository.findByIdAndUpdateProfile(
+      id,
+      reqBody
+    );
+    if (updatedUser) {
+      console.log("updated user", updatedUser);
       return {
         status: 200,
         data: {
-          success:true,
+          success: true,
           message: updatedUser,
         },
       };
-    }else{
+    } else {
       return {
         status: 400,
         data: {
-          success:false,
+          success: false,
           message: "Updating user profile failed!",
         },
       };
     }
-    
   }
 }
 

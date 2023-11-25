@@ -2,16 +2,15 @@ interface IUser {
   _id: string;
   firstName: string;
   lastName: string;
-  fullName:string,
   email: string;
   mobile?: string;
-  password:string,
+  password: string;
   profileImage: string;
   isVerified?: boolean;
   isBlocked?: boolean;
-  wallet?:number | null;
+  wallet?: number | null;
   wishlist?: {}[];
-  isGoogle?:boolean
+  isGoogle?: boolean;
 }
 
 export default IUser;
