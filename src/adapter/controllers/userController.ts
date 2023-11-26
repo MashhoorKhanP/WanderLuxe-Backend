@@ -77,7 +77,13 @@ class UserController {
           res.status(user.status).json(user.data);
         }
       } else {
-        res.status(400).json({ status: false, message: "Invalid otp" });
+        console.log('Else case invalid otp')
+        res.status(400).json(
+          { success: false,
+          data:{
+            message: "Invalid otp"
+          }
+        });
       }
     } catch (error) {
       const typedError: Error = error as Error;
