@@ -48,8 +48,8 @@ class UserController {
           console.log(otp);
 
           setTimeout(() => {
-            req.app.locals.otp = this.GenerateOTP.generateOtp();
-          }, 3 * 60000);
+            req.app.locals.otp = null;
+          }, 2 * 60000);
 
           res.status(verifyUser.status).json(verifyUser.data);
         } else {
@@ -67,9 +67,42 @@ class UserController {
     }
   }
 
+  async googleSignUp(req: Request, res: Response) {
+    try {
+      const verifyUser = await this.userUseCase.googleSignUp(req.body.email);
+      console.log("Entered inside signUp Controller", verifyUser);
+
+      if (
+        verifyUser?.data?.message &&
+        typeof verifyUser.data.message === "object" &&
+        "createdAt" in verifyUser.data.message
+      ) {
+        return res.status(verifyUser.status).json({
+          success: true,
+          result: { ...verifyUser.data },
+        });
+      }
+      if (verifyUser && verifyUser.data) {
+        if (verifyUser.data.status === true && req.body.isGoogle) {
+          let user = await this.userUseCase.verifyUser(req.body);
+          console.log("controller 23 line", user);
+          if (user) {
+            res.status(user.status).json({ ...user.data });
+          }
+        }
+      } else {
+        res.status(400).json({ success: false, result: {} });
+      }
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
   async userVerification(req: Request, res: Response) {
     try {
       if (req.body.otp === req.app.locals.otp) {
+        console.log('Req.body.otp',req.body.otp ,"Req.app.locals",req.app.locals.otp);
         const user = await this.userUseCase.verifyUser(req.app.locals.userData);
         if (user) {
           req.app.locals.userData = null;

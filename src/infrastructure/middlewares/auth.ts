@@ -20,7 +20,7 @@ declare global{
   }
 }
 
-const googleAuth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     const googleToken = token?.length! > 1000;
@@ -45,37 +45,31 @@ const googleAuth = async (req: AuthenticatedRequest, res: Response, next: NextFu
       console.log("googleAuth successful")
     } else {
       // To do: verify our custom jwt token
-      // let token; 
-      // token = req.cookies.userJWT;
-      // console.log(token);
-      // if(token){
-      //   try{
-      //     const decoded = jwt.verify(token!,process.env.JWT_SECRET as string) as JwtPayload;
-          
-      //     const user = await userRepo.findById(decoded._id as string);
-      //     if(user){
-      //       req.userId = user._id;
-      //       if(user.isBlocked){
-      //         return res.status(401).json({success:false,message: 'You are blocked by admin!'});
-      //       }else{
-      //         next();
-      //       }
-      //     }else{
-      //       return res.status(401).json({success:false,message:'Not authorized,invalid token'});
-      //     }
-      //   }catch(error){
-      //     return res.status(401).json({success:false,message:'Not authorized,invalid token'});
-      //   }
-      // }else{
-      //   return res.status(401).json({success:false,message:'Not authorized,invalid token'});
-      // }
+      let token; 
+      token = req.cookies.userJWT;
+      console.log('userToken',token);
+      if(token){
+          const decoded = jwt.decode(token) as JwtPayload;
+          console.log('Decoded User Token',decoded);
+          const user = await userRepo.findById(decoded._id as string);
+          console.log('User',user)
+          if(user && decoded.role === 'user'){
+            req.userId = user._id;
+            if(user.isBlocked){
+              return res.status(401).json({success:false,result:{success:false,message: "You have been blocked by admin!"}});
+            }else{
+              console.log('NextFunction');
+              next();
+            }
+          }
+      }else{
+        return res.status(401).json({success:false,result:{success:false,message: "Unauthorized Access"}});
+      }
     }
-
-    next();
   } catch (error) {
     console.log(error);
-    res.status(401).json({ success: false, message: 'Something went wrong with your authorization' });
+    res.status(401).json({ success: false, result:{success:false, message: 'Something went wrong with your authorization' }});
   }
 };
 
-export default googleAuth;
+export default auth;

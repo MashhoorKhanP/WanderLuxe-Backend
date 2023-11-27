@@ -18,7 +18,7 @@ class UserUserCase {
     this.JWTToken = JWTToken;
   }
 
-  async signUp(email: string) {
+  async googleSignUp(email: string) {
     const userExists = await this.UserRepository.findByEmail(email);
 
     if (userExists) {
@@ -38,12 +38,14 @@ class UserUserCase {
         // If the user is not blocked, generate a token and return success
         const userId = userExists?._id;
         if (userId) {
+          const role = "user";
           const token = this.JWTToken.generateToken(
             userExists._id,
             userExists.email,
             userExists.firstName,
             userExists.lastName,
-            userExists.profileImage
+            userExists.profileImage,
+            role
           );
 
           return {
@@ -79,6 +81,31 @@ class UserUserCase {
     }
   }
 
+  async signUp(email: string) {
+    const userExists = await this.UserRepository.findByEmail(email);
+
+    if (userExists) {
+      return {
+        status: 400,
+        data: {
+          status: false,
+          success: false,
+          message: "User already exists!",
+        },
+      };
+    } else {
+      // If the user doesn't exist, return success with a verification message
+      return {
+        status: 200,
+        data: {
+          status: true,
+          success: true,
+          message: "Verification OTP sent to your email",
+        },
+      };
+    }
+  }
+
   async verifyUser(user: IUser) {
     console.log("useCase", user);
     var token = "";
@@ -86,13 +113,15 @@ class UserUserCase {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
       console.log("newUser", newUser);
+      const role = "user";
       if (user)
         token = this.JWTToken.generateToken(
           user._id,
           user.firstName,
           user.lastName,
           user.email,
-          user.profileImage
+          user.profileImage,
+          role
         );
       await this.UserRepository.save(newUser);
 
@@ -134,13 +163,15 @@ class UserUserCase {
 
       if (passwordMatch) {
         const userId = userData?._id;
+        const role = "user";
         if (userId)
           token = this.JWTToken.generateToken(
             userData._id,
             userData.email,
             userData.firstName,
             userData.lastName,
-            userData.profileImage
+            userData.profileImage,
+            role
           );
         return {
           status: 200,

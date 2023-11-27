@@ -8,7 +8,7 @@ import UserUserCase from "../../useCases/userUseCase";
 import UserController from "../../adapter/controllers/userController";
 import GenerateOTP from "../services/generateOtp";
 import GenerateEmail from "../services/sendMail";
-import googleAuth from "../middlewares/googleAuth";
+import auth from "../middlewares/auth";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -23,12 +23,12 @@ const controller = new UserController(userCase, email, otp);
 const router = express.Router();
 
 router.post("/signup", (req, res) => controller.signUp(req, res));
-router.post("/google-signup", (req, res) => controller.signUp(req, res));
+router.post("/google-signup", (req, res) => controller.googleSignUp(req, res));
 router.post("/verify-otp", (req, res) => controller.userVerification(req, res));
 router.post("/resend-otp", (req, res) => controller.resendOtp(req, res));
-router.post("/login", (req, res) => controller.login(req, res));
-router.patch("/profile/:userId",googleAuth,(req, res) =>
+router.post("/login",(req, res) => controller.login(req, res));
+router.patch("/profile/:userId",auth,(req, res) =>
   controller.updateProfile(req, res)
-); // todo: uncomment and check the jwt auth in gooleAuth
+);
 
 export default router;

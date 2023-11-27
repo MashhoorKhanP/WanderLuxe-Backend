@@ -5,6 +5,7 @@ import AdminRepository from "../repositories/adminRepository";
 import UserRepository from "../repositories/userRepository";
 import AdminUseCase from "../../useCases/adminUseCase";
 import AdminController from "../../adapter/controllers/adminController";
+import adminAuth from "../middlewares/adminAuth";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -24,7 +25,7 @@ const controller = new AdminController(adminCase);
 const router = express.Router();
 
 router.post("/login", (req, res) => controller.login(req, res));
-router.get("/users", (req, res) => controller.getUsers(req, res));
-router.patch("/users/update-user/:userId", (req, res) =>controller.updateUsers(req, res));
+router.get("/users",adminAuth, (req, res) => controller.getUsers(req, res));
+router.patch("/users/update-user/:userId",adminAuth, (req, res) =>controller.updateUsers(req, res));
 
 export default router;

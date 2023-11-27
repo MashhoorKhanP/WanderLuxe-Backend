@@ -44,12 +44,14 @@ class AdminUseCase {
         adminData.password
       );
       if (passwordMatch) {
+        const role = 'admin';
         const token = this.JWTToken.generateToken(
           adminData._id,
           adminData.email,
           adminData.firstName,
           adminData.profileImage,
-          adminData.lastName
+          adminData.lastName,
+          role
         );
         return {
           status: 200,
