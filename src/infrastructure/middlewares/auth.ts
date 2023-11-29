@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import {OAuth2Client, TokenPayload} from 'google-auth-library';
 import IGoogleAuthUser from '../../domain/entities/googleAuth';
 import UserRepository from '../repositories/userRepository';
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -49,7 +49,7 @@ const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction
       token = req.cookies.userJWT;
       console.log('userToken',token);
       if(token){
-          const decoded = jwt.decode(token) as JwtPayload;
+          const decoded = jwt.verify(token,process.env.JWT_SECRET as Secret) as JwtPayload;
           console.log('Decoded User Token',decoded);
           const user = await userRepo.findById(decoded._id as string);
           console.log('User',user)

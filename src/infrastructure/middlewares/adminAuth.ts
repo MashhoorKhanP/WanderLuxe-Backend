@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import AdminRepository from "../repositories/adminRepository";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import IAdmin from "../../domain/entities/admin";
 
 interface AuthenticatedRequest extends Request {
@@ -27,7 +27,7 @@ const adminAuth = async (
     console.log(token, "adminJWT");
 
     if (token) {
-      const decoded = jwt.decode(token) as JwtPayload;
+      const decoded = jwt.verify(token,process.env.JWT_SECRET as Secret) as JwtPayload;
       console.log(decoded)
       const admin = await adminRepo.findByEmail(decoded.email as string);
       console.log(admin, "admin");
