@@ -7,7 +7,7 @@ class HotelController {
   constructor(HotelUseCase : HotelUseCase){
     this.HotelUseCase = HotelUseCase;
   }
-
+  //Admin Side
   async addHotel(req:Request, res: Response){
     try{
       const newHotel = await this.HotelUseCase.addHotel(req.body);
@@ -21,6 +21,21 @@ class HotelController {
         res.status(400).json({ success: false, result: {} });
       }
     } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+
+  //User side
+  async getHotels(req:Request, res: Response){
+    try{
+      const hotels = await this.HotelUseCase.getHotels();
+      res.status(hotels.status).json({
+        success:true,
+        result:{...hotels.data}
+      })
+    }catch (error) {
       const typedError = error as Error;
       res.status(400).json({ success: false, error: typedError.message });
     }

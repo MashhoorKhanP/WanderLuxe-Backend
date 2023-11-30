@@ -16,7 +16,7 @@ class HotelRepository implements HotelRepo{
   }
 
   async findAllHotels(): Promise<{}[] | null> {
-    const hotels = await HotelModel.find({})
+    const hotels = await HotelModel.find({}).sort({_id:-1});
     return hotels;
   }
 }

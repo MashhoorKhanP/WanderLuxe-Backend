@@ -7,7 +7,7 @@ class HotelUseCase {
   constructor(HotelRepository: HotelRepository) {
     this.HotelRepository = HotelRepository;
   }
-
+  //Admin side
   async addHotel(hotel: IHotel) {
       console.log("hotelUseCase", { ...hotel });
       if (hotel) {
@@ -30,7 +30,18 @@ class HotelUseCase {
           }
         }
       }
+  }
 
+  //User side
+  async getHotels(){
+    const hotels = await this.HotelRepository.findAllHotels();
+    return {
+      status:200,
+      data:{
+        success:true,
+        message:hotels
+      }
+    }
   }
 }
 

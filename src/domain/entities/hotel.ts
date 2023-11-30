@@ -10,6 +10,7 @@ interface IHotel {
   description: string;
   parkingPrice?: number;
   images: string[];
+  dropImage:string
 }
 
 export default IHotel;
