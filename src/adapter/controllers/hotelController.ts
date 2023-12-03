@@ -26,6 +26,21 @@ class HotelController {
     }
   }
 
+  async deleteHotel(req:Request,res:Response){
+    try{
+      const hotelId = req.params.hotelId;
+      console.log(hotelId)
+      const hotel = this.HotelUseCase.deleteHotel(hotelId);
+      return res.status(200).json({
+        success:true,
+        result:{hotel}
+      })
+    }catch(error){
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
 
   //User side
   async getHotels(req:Request, res: Response){

@@ -32,6 +32,18 @@ class HotelUseCase {
       }
   }
 
+  async deleteHotel(hotelId:string){
+    const _id = await this.HotelRepository.findAndDeleteHotels(hotelId);
+    console.log('Result of deleteHotel', _id);
+    return{
+      status:200,
+      data:{
+        success:true,
+        message:_id
+      }
+    }
+  }
+
   //User side
   async getHotels(){
     const hotels = await this.HotelRepository.findAllHotels();

@@ -37,4 +37,5 @@ router.get("/users",adminAuth, (req, res) => controller.getUsers(req, res));
 router.patch("/users/update-user/:userId",adminAuth, (req, res) =>controller.updateUsers(req, res));
 
 router.post('/hotels/add-hotel',adminAuth,(req,res) => hotelController.addHotel(req,res));
+router.delete('/hotels/delete-hotel/:hotelId',adminAuth,(req,res) => hotelController.deleteHotel(req,res));
 export default router;

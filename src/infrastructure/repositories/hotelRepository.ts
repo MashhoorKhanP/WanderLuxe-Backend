@@ -19,6 +19,19 @@ class HotelRepository implements HotelRepo{
     const hotels = await HotelModel.find({}).sort({_id:-1});
     return hotels;
   }
+
+  async findAndDeleteHotels(hotelId: string): Promise<string | null> {
+    const deletedHotel = await HotelModel.findByIdAndDelete(hotelId);
+    // Check if the hotel was deleted
+    if (deletedHotel) {
+      // Access the _id property of the deleted document
+      const { _id } = deletedHotel;
+      return _id.toString(); // Assuming _id is an ObjectId, convert it to a string
+    }
+
+    // If no hotel was deleted, return null
+    return null;
+  }
 }
 
 export default HotelRepository;
