@@ -39,4 +39,5 @@ router.patch("/profile/:userId",auth,(req, res) =>
 
 router.get("/find-hotels",(req,res) => hotelController.getHotels(req,res));
 
+
 export default router;

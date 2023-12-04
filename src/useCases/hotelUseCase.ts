@@ -44,6 +44,30 @@ class HotelUseCase {
     }
   }
 
+  async updateHotel(hotelId:string,reqBody:object){
+    const updatedHotel = await this.HotelRepository.findByIdAndUpdate(
+      hotelId,reqBody
+    )
+    if(updatedHotel){
+      console.log("updated user", updatedHotel);
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: updatedHotel,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          success: false,
+          message: `Updating hotel failed`,
+        },
+      };
+    }
+  }
+
   //User side
   async getHotels(){
     const hotels = await this.HotelRepository.findAllHotels();

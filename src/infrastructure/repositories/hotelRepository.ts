@@ -28,9 +28,13 @@ class HotelRepository implements HotelRepo{
       const { _id } = deletedHotel;
       return _id.toString(); // Assuming _id is an ObjectId, convert it to a string
     }
-
     // If no hotel was deleted, return null
     return null;
+  }
+
+  async findByIdAndUpdate(_id: string,reqBody:object): Promise<IHotel | null> {
+    const hotel = await HotelModel.findByIdAndUpdate(_id,reqBody,{ new: true });
+    return hotel;
   }
 }
 

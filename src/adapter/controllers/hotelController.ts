@@ -41,6 +41,20 @@ class HotelController {
     }
   }
 
+  async updateHotel(req: Request, res: Response){
+    try{
+      const hotelId = req.params.hotelId;
+      const updatedHotel = await this.HotelUseCase.updateHotel(hotelId,req.body)
+      res.status(200).json({
+        success: true,
+        result: { ...updatedHotel.data },
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
 
   //User side
   async getHotels(req:Request, res: Response){
