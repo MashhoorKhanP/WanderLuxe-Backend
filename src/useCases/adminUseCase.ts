@@ -44,7 +44,7 @@ class AdminUseCase {
         adminData.password
       );
       if (passwordMatch) {
-        const role = 'admin';
+        const role = "admin";
         const token = this.JWTToken.generateToken(
           adminData._id,
           adminData.email,

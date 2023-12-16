@@ -15,7 +15,7 @@ class JWTToken implements JWT {
       const token = jwt.sign(
         { _id, email, firstName, lastName, profileImage,role },
         KEY,
-        { expiresIn: "1h" }
+        { expiresIn: "4h" }
       );
       return token;
     }

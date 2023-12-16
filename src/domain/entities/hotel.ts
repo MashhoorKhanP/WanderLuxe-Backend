@@ -6,12 +6,12 @@ interface IHotel {
   location: string;
   distanceFromCityCenter: number;
   email: string;
-  mobile:string;
+  mobile: string;
   minimumRent: number;
   description: string;
   parkingPrice?: number;
   images: string[];
-  dropImage:string
+  dropImage: string;
 }
 
 export default IHotel;

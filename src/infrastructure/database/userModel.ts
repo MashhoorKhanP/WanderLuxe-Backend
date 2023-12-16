@@ -12,7 +12,10 @@ const userSchema: Schema = new Schema<IUser & Document>(
     isVerified: { type: Boolean, default: false },
     isBlocked: { type: Boolean, default: false },
     isGoogle: { type: Boolean, default: false },
-    wishlist: [{}],
+    wishlist: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Hotel'
+    }],
     wallet: { type: Number, default: 0 },
   },
   {

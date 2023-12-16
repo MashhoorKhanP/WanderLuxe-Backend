@@ -9,46 +9,47 @@ class HotelUseCase {
   }
   //Admin side
   async addHotel(hotel: IHotel) {
-      console.log("hotelUseCase", { ...hotel });
-      if (hotel) {
-        await this.HotelRepository.save({ ...hotel });
-        console.log("Hotel added successfully");
-        return {
-          status: 200,
-          data: {
-            success: true,
-            message: hotel,
-          },
-        };
-      }else{
-        return {
-          status:400,
-          data:{
-            status:false,
-            success:false,
-            message:'Something went wrong in adding the hotel!'
-          }
-        }
-      }
-  }
-
-  async deleteHotel(hotelId:string){
-    const _id = await this.HotelRepository.findAndDeleteHotels(hotelId);
-    console.log('Result of deleteHotel', _id);
-    return{
-      status:200,
-      data:{
-        success:true,
-        message:_id
-      }
+    console.log("hotelUseCase", { ...hotel });
+    if (hotel) {
+      await this.HotelRepository.save({ ...hotel });
+      console.log("Hotel added successfully");
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: hotel,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          status: false,
+          success: false,
+          message: "Something went wrong in adding the hotel!",
+        },
+      };
     }
   }
 
-  async updateHotel(hotelId:string,reqBody:object){
+  async deleteHotel(hotelId: string) {
+    const _id = await this.HotelRepository.findAndDeleteHotel(hotelId);
+    console.log("Result of deleteHotel", _id);
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: _id,
+      },
+    };
+  }
+
+  async updateHotel(hotelId: string, reqBody: object) {
     const updatedHotel = await this.HotelRepository.findByIdAndUpdate(
-      hotelId,reqBody
-    )
-    if(updatedHotel){
+      hotelId,
+      reqBody
+    );
+    if (updatedHotel) {
       console.log("updated user", updatedHotel);
       return {
         status: 200,
@@ -69,15 +70,15 @@ class HotelUseCase {
   }
 
   //User side
-  async getHotels(){
+  async getHotels() {
     const hotels = await this.HotelRepository.findAllHotels();
     return {
-      status:200,
-      data:{
-        success:true,
-        message:hotels
-      }
-    }
+      status: 200,
+      data: {
+        success: true,
+        message: hotels,
+      },
+    };
   }
 }
 

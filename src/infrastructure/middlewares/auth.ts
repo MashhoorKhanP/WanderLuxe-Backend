@@ -51,17 +51,20 @@ const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction
       if(token){
           const decoded = jwt.verify(token,process.env.JWT_SECRET as Secret) as JwtPayload;
           console.log('Decoded User Token',decoded);
-          const user = await userRepo.findById(decoded._id as string);
-          console.log('User',user)
-          if(user && decoded.role === 'user'){
-            req.userId = user._id;
-            if(user.isBlocked){
-              return res.status(401).json({success:false,result:{success:false,message: "You have been blocked by admin!"}});
-            }else{
-              console.log('NextFunction');
-              next();
+          if(decoded.role==='user'){
+              const user = await userRepo.findById(decoded._id as string);
+            console.log('User',user)
+            if(user && decoded.role === 'user'){
+              req.userId = user._id;
+              if(user.isBlocked){
+                return res.status(401).json({success:false,result:{success:false,message: "You have been blocked by admin!"}});
+              }else{
+                console.log('NextFunction');
+                next();
+              }
             }
           }
+          
       }else{
         return res.status(401).json({success:false,result:{success:false,message: "Unauthorized Access"}});
       }

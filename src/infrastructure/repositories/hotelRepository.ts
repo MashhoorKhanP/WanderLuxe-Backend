@@ -2,25 +2,25 @@ import IHotel from "../../domain/entities/hotel";
 import HotelModel from "../database/hotelModel";
 import HotelRepo from "../../useCases/interfaces/hotelRepo";
 
-class HotelRepository implements HotelRepo{
-  async save(hotel:IHotel) : Promise<IHotel>{
-    console.log('hotelRepository',hotel)
+class HotelRepository implements HotelRepo {
+  async save(hotel: IHotel): Promise<IHotel> {
+    console.log("hotelRepository", hotel);
     const newHotel = new HotelModel(hotel);
     await newHotel.save();
     return newHotel;
   }
 
-  async findById(_id:string) : Promise<IHotel | null>{
-    const hotel = await HotelModel.findOne({_id});
+  async findById(_id: string): Promise<IHotel | null> {
+    const hotel = await HotelModel.findOne({ _id });
     return hotel;
   }
 
   async findAllHotels(): Promise<{}[] | null> {
-    const hotels = await HotelModel.find({}).sort({_id:-1});
+    const hotels = await HotelModel.find({}).sort({ _id: -1 });
     return hotels;
   }
 
-  async findAndDeleteHotels(hotelId: string): Promise<string | null> {
+  async findAndDeleteHotel(hotelId: string): Promise<string | null> {
     const deletedHotel = await HotelModel.findByIdAndDelete(hotelId);
     // Check if the hotel was deleted
     if (deletedHotel) {
@@ -32,8 +32,13 @@ class HotelRepository implements HotelRepo{
     return null;
   }
 
-  async findByIdAndUpdate(_id: string,reqBody:object): Promise<IHotel | null> {
-    const hotel = await HotelModel.findByIdAndUpdate(_id,reqBody,{ new: true });
+  async findByIdAndUpdate(
+    _id: string,
+    reqBody: object
+  ): Promise<IHotel | null> {
+    const hotel = await HotelModel.findByIdAndUpdate(_id, reqBody, {
+      new: true,
+    });
     return hotel;
   }
 }

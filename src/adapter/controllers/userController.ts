@@ -67,7 +67,7 @@ class UserController {
     }
   }
 
-  async googleSignUp(req: Request, res: Response) {
+  async googleSignUp(req: Request, res: Response)  {
     try {
       const verifyUser = await this.userUseCase.googleSignUp(req.body.email);
       console.log("Entered inside signUp Controller", verifyUser);
@@ -102,20 +102,25 @@ class UserController {
   async userVerification(req: Request, res: Response) {
     try {
       if (req.body.otp === req.app.locals.otp) {
-        console.log('Req.body.otp',req.body.otp ,"Req.app.locals",req.app.locals.otp);
+        console.log(
+          "Req.body.otp",
+          req.body.otp,
+          "Req.app.locals",
+          req.app.locals.otp
+        );
         const user = await this.userUseCase.verifyUser(req.app.locals.userData);
         if (user) {
           req.app.locals.userData = null;
           req.app.locals.otp = null;
-          res.status(user.status).json(user.data);
+          res.status(user.status).json({ ...user.data });
         }
       } else {
-        console.log('Else case invalid otp')
-        res.status(400).json(
-          { success: false,
-          data:{
-            message: "Invalid otp"
-          }
+        console.log("Else case invalid otp");
+        res.status(400).json({
+          success: false,
+          data: {
+            message: "Invalid otp",
+          },
         });
       }
     } catch (error) {
@@ -134,11 +139,9 @@ class UserController {
       setTimeout(() => {
         req.app.locals.otp = this.GenerateOTP.generateOtp();
       }, 3 * 6000);
-      res
-        .status(200)
-        .json({
-          message: "Otp has been sent!(/backend/userController/resendOtp)",
-        });
+      res.status(200).json({
+        message: "Otp has been sent!(/backend/userController/resendOtp)",
+      });
     } catch (error) {
       const typedError = error as Error;
       res.status(400).json(typedError.message);
@@ -192,6 +195,51 @@ class UserController {
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
+
+
+  async addRemoveFromWishlist(req: Request, res: Response) {
+    try {
+      console.log('req.body',req.body);
+      const {hotelId,userId} = req.body;
+      console.log("addRemoveFromWishlist hotelId",hotelId,'userId',userId);
+      const result = await this.userUseCase.addRemoveFromWishlist(
+        hotelId,
+        userId
+      );
+      console.log(result);
+      res.status(result.status).json({
+        success: true,
+        result: {...result.data},
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async updatePassword(req: Request, res: Response) {
+    try {
+      console.log('req.body',req.body);
+      const {userId,currentPassword,newPassword} = req.body;
+      console.log("userId",userId);
+      const result = await this.userUseCase.updatePassword(
+        userId,
+        currentPassword,
+        newPassword
+      );
+      console.log(result);
+      res.status(result.status).json({
+        success: true,
+        result: {...result.data},
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+
+
 }
 
 export default UserController;

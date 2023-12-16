@@ -9,7 +9,7 @@ interface IUser {
   isVerified?: boolean;
   isBlocked?: boolean;
   wallet?: number | null;
-  wishlist?: {}[];
+  wishlist?: [];
   isGoogle?: boolean;
 }
 

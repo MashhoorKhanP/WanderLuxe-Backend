@@ -27,32 +27,33 @@ const adminAuth = async (
     console.log(token, "adminJWT");
 
     if (token) {
-      const decoded = jwt.verify(token,process.env.JWT_SECRET as Secret) as JwtPayload;
-      console.log(decoded)
-      const admin = await adminRepo.findByEmail(decoded.email as string);
-      console.log(admin, "admin");
-      if (admin && decoded.role ==='admin') {
-        next();
-      }
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as Secret
+      ) as JwtPayload;
+      console.log(decoded);
+      if(decoded.role === 'admin'){
+        const admin = await adminRepo.findByEmail(decoded.email as string);
+        console.log(admin, "admin");
+        if (admin && decoded.role === "admin") {
+          next();
+        }
+    }
     } else {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          result: { success: false, message: "Unauthorized Access" },
-        });
+      return res.status(401).json({
+        success: false,
+        result: { success: false, message: "Unauthorized Access" },
+      });
     }
   } catch (error) {
     console.log(error);
-    res
-      .status(401)
-      .json({
+    res.status(401).json({
+      success: false,
+      result: {
         success: false,
-        result: {
-          success: false,
-          message: "Something went wrong with your authorization",
-        },
-      });
+        message: "Something went wrong with your authorization",
+      },
+    });
   }
 };
 

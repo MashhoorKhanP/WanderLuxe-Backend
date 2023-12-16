@@ -5,7 +5,7 @@ const hotelSchema:Schema = new Schema<IHotel & Document>(
   {
     longitude:{type:Number,require:true},
     latitude:{type:Number,require:true},
-    hotelName:{type:String, required:true},
+    hotelName:{type:String, required:true,unique:true},
     location:{type:String, required:true},
     distanceFromCityCenter:{type:Number, required:true},
     email:{type:String, required:true},

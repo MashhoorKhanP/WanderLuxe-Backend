@@ -1,7 +1,9 @@
+import { ObjectId } from "mongodb";
 import IUser from "../domain/entities/user";
 import UserRepository from "../infrastructure/repositories/userRepository";
 import Encrypt from "../infrastructure/services/bcryptPassword";
 import JWTToken from "../infrastructure/services/generateToken";
+import mongoose from "mongoose";
 
 class UserUserCase {
   private UserRepository: UserRepository;
@@ -173,11 +175,26 @@ class UserUserCase {
             userData.profileImage,
             role
           );
+        const safedUserData = {
+          _id:userData._id,
+          firstName:userData.firstName,
+          lastName:userData.lastName,
+          email:userData.email,
+          profileImage:userData.profileImage,
+          isVerified:userData.isVerified,
+          isBlocked:userData.isBlocked,
+          isGoogle:userData.isGoogle,
+          wishlist:userData.wishlist,
+          wallet:userData.wallet,
+          mobile:userData.mobile,
+
+        }
+        console.log('userData', userData);
         return {
           status: 200,
           data: {
             success: true,
-            message: userData,
+            message: safedUserData,
             token,
           },
         };
@@ -212,11 +229,25 @@ class UserUserCase {
     );
     if (updatedUser) {
       console.log("updated user", updatedUser);
+      const safedUserData = {
+        _id:updatedUser._id,
+        firstName:updatedUser.firstName,
+        lastName:updatedUser.lastName,
+        email:updatedUser.email,
+        profileImage:updatedUser.profileImage,
+        isVerified:updatedUser.isVerified,
+        isBlocked:updatedUser.isBlocked,
+        isGoogle:updatedUser.isGoogle,
+        wishlist:updatedUser.wishlist,
+        wallet:updatedUser.wallet,
+        mobile:updatedUser.mobile,
+
+      }
       return {
         status: 200,
         data: {
           success: true,
-          message: updatedUser,
+          message:safedUserData,
         },
       };
     } else {
@@ -225,6 +256,71 @@ class UserUserCase {
         data: {
           success: false,
           message: "Updating user profile failed!",
+        },
+      };
+    }
+  }
+
+  async addRemoveFromWishlist(hotelId: string, userId:string) {
+    //Continue find user then update wishlist as nonstop fashion
+    console.log('reachedhere usecase')
+    const user:any= await this.UserRepository.findById(userId);
+    console.log(user)
+    const hotelObjectId = new mongoose.Types.ObjectId(hotelId);
+    const hotelExist = user.wishlist.some((data:any) => data.equals(hotelObjectId));
+    console.log('hotelExist', hotelExist);
+    let isWishlisted = false;
+    if(hotelExist){
+      isWishlisted =true;
+      const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(userId,hotelId,isWishlisted);
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: resultUser,
+        },
+      };
+    }else if(!hotelExist){
+      const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(userId,hotelId,isWishlisted=false);
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: resultUser,
+        },
+      };
+    }else {
+      return {
+        status: 400,
+        data: {
+          success: false,
+          message: "Add/Remove wishlist failed!",
+        },
+      };
+    }
+  }
+
+  async updatePassword(userId:string,currentPassword: string,newPassword: string) {
+    
+    const user:any= await this.UserRepository.findById(userId);
+    console.log(user)
+    const passwordMatch = await this.Encrypt.compare(currentPassword,user.password);
+    if(passwordMatch){
+      const newHashedPassword = await this.Encrypt.generateHash(newPassword);
+      const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(userId,newHashedPassword);
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: updatedUser,
+        },
+      };
+    }else {
+      return {
+        status: 400,
+        data: {
+          success: false,
+          message: "Entered wrong current password/ password not found!",
         },
       };
     }
