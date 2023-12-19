@@ -53,11 +53,18 @@ class AdminUseCase {
           adminData.lastName,
           role
         );
+        const safedAdminData = {
+          _id:adminData._id,
+          email:adminData.email,
+          firstName:adminData.firstName,
+          lastName:adminData.lastName,
+
+        }
         return {
           status: 200,
           data: {
             success: true,
-            message: adminData,
+            message: safedAdminData,
             token,
           },
         };
