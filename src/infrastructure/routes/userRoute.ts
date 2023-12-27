@@ -18,6 +18,10 @@ import RoomController from "../../adapter/controllers/roomController";
 import CouponRepository from "../repositories/couponRepository";
 import CouponUseCase from "../../useCases/couponUseCase";
 import CouponController from "../../adapter/controllers/couponController";
+import PaymentRepository from "../services/stripe";
+import BookingUseCase from "../../useCases/bookingUseCase";
+import BookingRepository from "../repositories/bookingRepository";
+import BookingController from "../../adapter/controllers/bookingController";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -28,16 +32,20 @@ const userRepository = new UserRepository();
 const hotelRepository = new HotelRepository();
 const roomRepository = new RoomRepository();
 const couponRepository = new CouponRepository();
+const paymentRepository = new PaymentRepository();
+const bookingRepository = new BookingRepository();
 
 const hotelCase = new HotelUseCase(hotelRepository);
 const roomCase = new RoomUseCase(roomRepository);
 const couponCase = new CouponUseCase(couponRepository);
 const userCase = new UserUserCase(userRepository, encrypt, jwt);
+const bookingCase = new BookingUseCase(bookingRepository,paymentRepository);
 
 const controller = new UserController(userCase, email, otp);
 const hotelController = new HotelController(hotelCase);
 const roomController = new RoomController(roomCase);
 const couponController = new CouponController(couponCase);
+const bookingController = new BookingController(bookingCase);
 
 const router = express.Router();
 
@@ -53,6 +61,8 @@ router.patch("/profile/:userId", auth, (req, res) =>
 router.get("/find-hotels", (req, res) => hotelController.getHotels(req, res));
 router.get("/find-rooms", (req, res) => roomController.getRooms(req, res));
 router.get("/find-coupons",(req,res) => couponController.getCoupons(req,res));
+router.get("/find-bookings",(req,res) => bookingController.getBookings(req,res));
+router.get('/my-bookings/:userId', (req, res) => bookingController.getUserBookings(req,res));
 
 router.patch("/add-remove/wishlist", auth, (req, res) =>
   controller.addRemoveFromWishlist(req, res)
@@ -61,5 +71,8 @@ router.patch("/add-remove/wishlist", auth, (req, res) =>
 router.patch("/change-password", auth, (req, res) =>
   controller.updatePassword(req, res)
 );
+
+router.post("/payment",auth,(req,res) => bookingController.payment(req,res));
+router.post("/webhook",(req,res) => bookingController.webhook(req,res));
 
 export default router;

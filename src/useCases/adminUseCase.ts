@@ -107,7 +107,6 @@ class AdminUseCase {
       isVerified,
       isBlocked
     );
-    console.log("updatedUser from adminUseCase", updateUser);
     if (updateUser) {
       return {
         status: 200,

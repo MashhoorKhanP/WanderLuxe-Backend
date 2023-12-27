@@ -49,7 +49,7 @@ const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction
       token = req.cookies.userJWT;
       console.log('userToken',token);
       if(token){
-          const decoded = jwt.verify(token,process.env.JWT_SECRET as Secret) as JwtPayload;
+          const decoded = jwt.decode(token) as JwtPayload;
           console.log('Decoded User Token',decoded);
           if(decoded.role==='user'){
               const user = await userRepo.findById(decoded._id as string);

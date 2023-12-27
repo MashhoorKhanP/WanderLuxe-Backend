@@ -11,7 +11,6 @@ class HotelController {
   async addHotel(req: Request, res: Response) {
     try {
       const newHotel = await this.HotelUseCase.addHotel(req.body);
-      console.log("newHotel", newHotel);
       if (newHotel) {
         return res.status(newHotel.status).json({
           success: true,
@@ -29,7 +28,6 @@ class HotelController {
   async deleteHotel(req: Request, res: Response) {
     try {
       const hotelId = req.params.hotelId;
-      console.log(hotelId);
       const hotel = this.HotelUseCase.deleteHotel(hotelId);
       return res.status(200).json({
         success: true,

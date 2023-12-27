@@ -9,10 +9,8 @@ class CouponUseCase {
   }
   //Admin side
   async addCoupon(coupon: ICoupon) {
-    console.log("couponUseCase", { ...coupon });
     if (coupon) {
       await this.CouponRepository.save({ ...coupon });
-      console.log("Coupon added successfully");
       return {
         status: 200,
         data: {
@@ -33,8 +31,7 @@ class CouponUseCase {
   }
 
   async deleteCoupon(couponId: string) {
-    const _id = await this.CouponRepository.findAndDeleteCoupon(couponId);
-    console.log("Result of deleteCoupon", _id);
+    const _id = await this.CouponRepository.findAndDeleteCoupon(couponId)
     return {
       status: 200,
       data: {
@@ -50,7 +47,6 @@ class CouponUseCase {
       reqBody
     );
     if (updatedCoupon) {
-      console.log("updated coupon", updatedCoupon);
       return {
         status: 200,
         data: {

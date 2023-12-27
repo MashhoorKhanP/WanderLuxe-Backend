@@ -9,10 +9,8 @@ class HotelUseCase {
   }
   //Admin side
   async addHotel(hotel: IHotel) {
-    console.log("hotelUseCase", { ...hotel });
     if (hotel) {
       await this.HotelRepository.save({ ...hotel });
-      console.log("Hotel added successfully");
       return {
         status: 200,
         data: {
@@ -34,7 +32,6 @@ class HotelUseCase {
 
   async deleteHotel(hotelId: string) {
     const _id = await this.HotelRepository.findAndDeleteHotel(hotelId);
-    console.log("Result of deleteHotel", _id);
     return {
       status: 200,
       data: {
@@ -50,7 +47,6 @@ class HotelUseCase {
       reqBody
     );
     if (updatedHotel) {
-      console.log("updated user", updatedHotel);
       return {
         status: 200,
         data: {

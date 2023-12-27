@@ -14,8 +14,8 @@ const hotelSchema:Schema = new Schema<IHotel & Document>(
     description:{type:String,required:true},
     parkingPrice:{type:Number,default:0},
     images:{type:[String]},
-    dropImage:{type:String,default:'https://firebasestorage.googleapis.com/v0/b/wanderluxe-booking-app-87e72.appspot.com/o/WanderLuxe-ExtraImages%2FwanderLuxe.jpg?alt=media&token=edfbe01d-332d-4825-953c-37de30cfab17'}
-
+    dropImage:{type:String,default:'https://firebasestorage.googleapis.com/v0/b/wanderluxe-booking-app-87e72.appspot.com/o/WanderLuxe-ExtraImages%2FwanderLuxe.jpg?alt=media&token=edfbe01d-332d-4825-953c-37de30cfab17'},
+    appliedOffer:{type:String}
   },
   {timestamps:true}
 )

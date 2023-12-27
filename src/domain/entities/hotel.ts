@@ -12,6 +12,8 @@ interface IHotel {
   parkingPrice?: number;
   images: string[];
   dropImage: string;
+  appliedOffer:string;
+  
 }
 
 export default IHotel;

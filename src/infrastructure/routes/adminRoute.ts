@@ -15,6 +15,10 @@ import RoomController from "../../adapter/controllers/roomController";
 import CouponRepository from "../repositories/couponRepository";
 import CouponUseCase from "../../useCases/couponUseCase";
 import CouponController from "../../adapter/controllers/couponController";
+import BookingRepository from "../repositories/bookingRepository";
+import BookingUseCase from "../../useCases/bookingUseCase";
+import BookingController from "../../adapter/controllers/bookingController";
+import PaymentRepository from "../services/stripe";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -24,6 +28,7 @@ const userRepository = new UserRepository();
 const hotelRepository = new HotelRepository();
 const roomRepository = new RoomRepository();
 const couponRepository = new CouponRepository();
+const bookingRepository = new BookingRepository();
 
 const adminCase = new AdminUseCase(
   adminRepository,
@@ -34,11 +39,14 @@ const adminCase = new AdminUseCase(
 const hotelCase = new HotelUseCase(hotelRepository);
 const roomCase = new RoomUseCase(roomRepository)
 const couponCase = new CouponUseCase(couponRepository);
+const paymentRepository = new PaymentRepository();
+const bookingCase = new BookingUseCase(bookingRepository,paymentRepository);
 
 const controller = new AdminController(adminCase);
 const hotelController = new HotelController(hotelCase);
 const roomController = new RoomController(roomCase);
 const couponController = new CouponController(couponCase);
+const bookingController = new BookingController(bookingCase);
 
 const router = express.Router();
 
@@ -74,4 +82,13 @@ router.post("/coupons/add-coupon", adminAuth, (req, res) =>
 router.patch("/coupons/update-coupon/:couponId", adminAuth, (req, res) =>
   couponController.updateCoupon(req, res)
 );
+router.delete("/coupons/delete-coupon/:couponId", adminAuth, (req, res) =>
+  couponController.deleteCoupon(req, res)
+);
+
+router.patch("/bookings/update-booking/:bookingId", adminAuth, (req, res) =>
+  bookingController.updateBooking(req, res)
+);
+
+
 export default router;

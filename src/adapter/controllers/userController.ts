@@ -70,7 +70,6 @@ class UserController {
   async googleSignUp(req: Request, res: Response)  {
     try {
       const verifyUser = await this.userUseCase.googleSignUp(req.body.email);
-      console.log("Entered inside signUp Controller", verifyUser);
 
       if (
         verifyUser?.data?.message &&
@@ -91,7 +90,7 @@ class UserController {
           }
         }
       } else {
-        res.status(400).json({ success: false, result: {} });
+        res.status(400).json({ success: false,data: {message:"You have been blocked by Admin"} });
       }
     } catch (error) {
       const typedError = error as Error;

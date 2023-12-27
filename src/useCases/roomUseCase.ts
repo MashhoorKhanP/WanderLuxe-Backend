@@ -9,10 +9,8 @@ class RoomUseCase {
   }
 
   async addRoom(room:IRoom) {
-    console.log('roomUseCase',{...room});
     if(room){
       await this.RoomRepository.save({...room});
-      console.log('Room added successfully');
       return {
         status: 200,
         data: {
@@ -34,7 +32,6 @@ class RoomUseCase {
 
   async deleteRoom(roomId: string) {
     const _id = await this.RoomRepository.findAndDeleteRoom(roomId);
-    console.log("Result of deleteRoom", _id);
     return {
       status: 200,
       data: {
@@ -50,7 +47,6 @@ class RoomUseCase {
       reqBody
     );
     if (updatedRoom) {
-      console.log("updated user", updatedRoom);
       return {
         status: 200,
         data: {

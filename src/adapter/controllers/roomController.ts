@@ -11,7 +11,6 @@ class RoomController {
   async addRoom(req: Request, res: Response) {
     try {
       const newRoom = await this.RoomUseCase.addRoom(req.body);
-      console.log("newRoom", newRoom);
       if (newRoom) {
         return res.status(newRoom.status).json({
           success: true,
@@ -29,7 +28,6 @@ class RoomController {
   async deleteRoom(req: Request, res: Response) {
     try {
       const roomId = req.params.roomId;
-      console.log('roomId',roomId);
       const room = this.RoomUseCase.deleteRoom(roomId);
       return res.status(200).json({
         success: true,

@@ -24,7 +24,6 @@ const adminAuth = async (
 ) => {
   try {
     let token = req.cookies.adminJWT;
-    console.log(token, "adminJWT");
 
     if (token) {
       const decoded = jwt.verify(
@@ -34,7 +33,6 @@ const adminAuth = async (
       console.log(decoded);
       if(decoded.role === 'admin'){
         const admin = await adminRepo.findByEmail(decoded.email as string);
-        console.log(admin, "admin");
         if (admin && decoded.role === "admin") {
           next();
         }

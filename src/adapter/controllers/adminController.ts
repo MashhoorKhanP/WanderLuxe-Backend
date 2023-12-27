@@ -10,7 +10,6 @@ class AdminController {
   async login(req: Request, res: Response) {
     try {
       const admin = await this.adminUseCase.login(req.body);
-      console.log("Entered inside admin controller admin", admin);
       if (admin.data.token) {
         res.cookie("adminJWT", admin.data.token, {
           httpOnly: true,
@@ -46,7 +45,6 @@ class AdminController {
     try {
       const userId = req.params.userId as string;
       const { isVerified, isBlocked } = req.body;
-      console.log(req.body);
       const updatedUser = await this.adminUseCase.updateUser(
         userId,
         isVerified,

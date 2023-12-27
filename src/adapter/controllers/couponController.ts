@@ -11,7 +11,6 @@ class CouponController {
   async addCoupon(req: Request, res: Response) {
     try {
       const newCoupon = await this.CouponUseCase.addCoupon(req.body);
-      console.log("newCoupon", newCoupon);
       if (newCoupon) {
         return res.status(newCoupon.status).json({
           success: true,
@@ -29,7 +28,6 @@ class CouponController {
   async deleteCoupon(req: Request, res: Response) {
     try {
       const couponId = req.params.couponId;
-      console.log(couponId);
       const coupon = this.CouponUseCase.deleteCoupon(couponId);
       return res.status(200).json({
         success: true,

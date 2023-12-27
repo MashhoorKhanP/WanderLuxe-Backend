@@ -22,7 +22,6 @@ class UserUserCase {
 
   async googleSignUp(email: string) {
     const userExists = await this.UserRepository.findByEmail(email);
-
     if (userExists) {
       if (userExists.isGoogle) {
         // If the user is blocked, return an error
@@ -109,12 +108,10 @@ class UserUserCase {
   }
 
   async verifyUser(user: IUser) {
-    console.log("useCase", user);
     var token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
-      console.log("newUser", newUser);
       const role = "user";
       if (user)
         token = this.JWTToken.generateToken(
@@ -189,7 +186,6 @@ class UserUserCase {
           mobile:userData.mobile,
 
         }
-        console.log('userData', userData);
         return {
           status: 200,
           data: {
@@ -199,7 +195,6 @@ class UserUserCase {
           },
         };
       } else {
-        console.log("109");
         return {
           status: 400,
           data: {
@@ -210,7 +205,6 @@ class UserUserCase {
         };
       }
     } else {
-      console.log("119");
       return {
         status: 400,
         data: {
@@ -228,7 +222,6 @@ class UserUserCase {
       reqBody
     );
     if (updatedUser) {
-      console.log("updated user", updatedUser);
       const safedUserData = {
         _id:updatedUser._id,
         firstName:updatedUser.firstName,
@@ -263,30 +256,61 @@ class UserUserCase {
 
   async addRemoveFromWishlist(hotelId: string, userId:string) {
     //Continue find user then update wishlist as nonstop fashion
-    console.log('reachedhere usecase')
     const user:any= await this.UserRepository.findById(userId);
-    console.log(user)
     const hotelObjectId = new mongoose.Types.ObjectId(hotelId);
     const hotelExist = user.wishlist.some((data:any) => data.equals(hotelObjectId));
-    console.log('hotelExist', hotelExist);
     let isWishlisted = false;
     if(hotelExist){
       isWishlisted =true;
       const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(userId,hotelId,isWishlisted);
+      let safedUserData;
+      if(resultUser){
+      safedUserData = {
+        _id:resultUser._id,
+        firstName:resultUser.firstName,
+        lastName:resultUser.lastName,
+        email:resultUser.email,
+        profileImage:resultUser.profileImage,
+        isVerified:resultUser.isVerified,
+        isBlocked:resultUser.isBlocked,
+        isGoogle:resultUser.isGoogle,
+        wishlist:resultUser.wishlist,
+        wallet:resultUser.wallet,
+        mobile:resultUser.mobile,
+
+        }
+      }
       return {
         status: 200,
         data: {
           success: true,
-          message: resultUser,
+          message: safedUserData,
         },
       };
     }else if(!hotelExist){
       const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(userId,hotelId,isWishlisted=false);
+      let safedUserData;
+      if(resultUser){
+      safedUserData = {
+        _id:resultUser._id,
+        firstName:resultUser.firstName,
+        lastName:resultUser.lastName,
+        email:resultUser.email,
+        profileImage:resultUser.profileImage,
+        isVerified:resultUser.isVerified,
+        isBlocked:resultUser.isBlocked,
+        isGoogle:resultUser.isGoogle,
+        wishlist:resultUser.wishlist,
+        wallet:resultUser.wallet,
+        mobile:resultUser.mobile,
+
+        }
+      }
       return {
         status: 200,
         data: {
           success: true,
-          message: resultUser,
+          message: safedUserData,
         },
       };
     }else {
@@ -303,16 +327,32 @@ class UserUserCase {
   async updatePassword(userId:string,currentPassword: string,newPassword: string) {
     
     const user:any= await this.UserRepository.findById(userId);
-    console.log(user)
     const passwordMatch = await this.Encrypt.compare(currentPassword,user.password);
     if(passwordMatch){
       const newHashedPassword = await this.Encrypt.generateHash(newPassword);
       const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(userId,newHashedPassword);
+      let safedUserData;
+      if(updatedUser){
+      safedUserData = {
+        _id:updatedUser._id,
+        firstName:updatedUser.firstName,
+        lastName:updatedUser.lastName,
+        email:updatedUser.email,
+        profileImage:updatedUser.profileImage,
+        isVerified:updatedUser.isVerified,
+        isBlocked:updatedUser.isBlocked,
+        isGoogle:updatedUser.isGoogle,
+        wishlist:updatedUser.wishlist,
+        wallet:updatedUser.wallet,
+        mobile:updatedUser.mobile,
+
+        }
+      }
       return {
         status: 200,
         data: {
           success: true,
-          message: updatedUser,
+          message: safedUserData,
         },
       };
     }else {
