@@ -13,6 +13,7 @@ const roomSchema: Schema = new Schema<IRoom & Document>(
     maxPeople: { type: Number, required: true },
     description: { type: String, required: true },
     images: { type: Array },
+    status: { type: String, default:'Available',required:true },
   },
   { timestamps: true }
 );

@@ -19,6 +19,9 @@ import BookingRepository from "../repositories/bookingRepository";
 import BookingUseCase from "../../useCases/bookingUseCase";
 import BookingController from "../../adapter/controllers/bookingController";
 import PaymentRepository from "../services/stripe";
+import ConversationRepository from "../repositories/conversationRepository";
+import ChatUseCase from "../../useCases/chatUseCase";
+import MessageRepository from "../repositories/messageRepository";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -40,9 +43,12 @@ const hotelCase = new HotelUseCase(hotelRepository);
 const roomCase = new RoomUseCase(roomRepository)
 const couponCase = new CouponUseCase(couponRepository);
 const paymentRepository = new PaymentRepository();
-const bookingCase = new BookingUseCase(bookingRepository,paymentRepository);
+const conversationRepository = new ConversationRepository();
+const messageRepository = new MessageRepository();
+const conversationCase = new ChatUseCase(conversationRepository,messageRepository,userRepository,adminRepository)
+const bookingCase = new BookingUseCase(bookingRepository,paymentRepository,roomRepository,couponRepository,userRepository);
 
-const controller = new AdminController(adminCase);
+const adminController = new AdminController(adminCase,conversationCase);
 const hotelController = new HotelController(hotelCase);
 const roomController = new RoomController(roomCase);
 const couponController = new CouponController(couponCase);
@@ -50,10 +56,10 @@ const bookingController = new BookingController(bookingCase);
 
 const router = express.Router();
 
-router.post("/login", (req, res) => controller.login(req, res));
-router.get("/users", adminAuth, (req, res) => controller.getUsers(req, res));
+router.post("/login", (req, res) => adminController.login(req, res));
+router.get("/users", adminAuth, (req, res) => adminController.getUsers(req, res));
 router.patch("/users/update-user/:userId", adminAuth, (req, res) =>
-  controller.updateUsers(req, res)
+  adminController.updateUsers(req, res)
 );
 
 router.post("/hotels/add-hotel", adminAuth, (req, res) =>
@@ -89,6 +95,14 @@ router.delete("/coupons/delete-coupon/:couponId", adminAuth, (req, res) =>
 router.patch("/bookings/update-booking/:bookingId", adminAuth, (req, res) =>
   bookingController.updateBooking(req, res)
 );
+
+//chat
+router.post('/conversation',(req,res) => adminController.newConversation(req,res));
+router.get('/get-conversations/:conversationId',(req,res) => adminController.getConversations(req,res));
+router.post('/add-message',(req,res) => adminController.addMessage(req,res));
+router.get('/get-message/:conversationId',(req,res) => adminController.getMessages(req,res));
+
+
 
 
 export default router;

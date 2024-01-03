@@ -9,6 +9,9 @@ interface CouponRepo{
     _id: string,
     reqBody: object
   ): Promise<ICoupon | null>;
+  findByIdAndUpdateCount(
+    _id: string,
+  ): Promise<ICoupon | null>
 }
 
 export default CouponRepo;

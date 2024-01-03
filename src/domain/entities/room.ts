@@ -10,6 +10,7 @@ interface IRoom {
   maxPeople: number;
   description: string;
   images?: string[];
+  status:string;
 }
 
 export default IRoom;

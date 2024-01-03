@@ -32,7 +32,7 @@ export const createServer = () => {
     const httpServer = http.createServer(app)
     const repository = new UserRepository
     const socket = new SocketManager(httpServer,repository)
-
+    
     app.use("/api/user", userRoute);
     app.use("/api/admin", adminRoute);
 

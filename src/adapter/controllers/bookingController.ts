@@ -8,9 +8,30 @@ class BookingController {
     this.BookingUseCase = BookingUseCase;
   }
 
+  async walletPayment(req: Request, res: Response) {
+    try {
+      const transactionId = 'Wallet Payment';
+      const receipt_url = 'Check wallet history';
+      const isWalletBalanceUsed = true;
+      const payment= await this.BookingUseCase.bookRoom(req.body,transactionId,receipt_url,isWalletBalanceUsed);
+      if (payment) {
+        return res.status(payment.status).json({
+          success: true,
+          result: { ...payment.data },
+        });
+      } else {
+        res.status(400).json({ success: false, result: {} });
+      }
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
   async payment(req: Request, res: Response) {
     try {
       req.app.locals.booking = req.body;
+      req.app.locals.isWalletBalanceUsed = req.query.isWalletBalanceUsed;
       const payment= await this.BookingUseCase.payment(req.body);
       if (payment) {
         return res.status(payment.status).json({
@@ -29,6 +50,7 @@ class BookingController {
   async webhook(req: Request, res: Response) {
     try {
       const localData = req.app.locals.booking;
+      const isWalletBalanceUsed = req.app.locals.isWalletBalanceUsed
       console.log('req.body of webhook',req.body);
       
       let transactionId;
@@ -42,7 +64,7 @@ class BookingController {
       }
       const confirmPayment= await this.BookingUseCase.confirmPayment(req as any);
       if (confirmPayment) {
-        const booking = await this.BookingUseCase.bookRoom(localData,transactionId,receiptUrl);
+        const booking = await this.BookingUseCase.bookRoom(localData,transactionId,receiptUrl,isWalletBalanceUsed);
         return res.status(booking.status).json({
           success: true,
           result: { ...booking.data },
@@ -73,6 +95,20 @@ class BookingController {
     try {
       const userId = req.params.userId;
       const bookings = await this.BookingUseCase.getUserBookings(userId);
+      res.status(bookings.status).json({
+        success: true,
+        result: { ...bookings.data },
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async getHotelBookings(req: Request, res: Response) {
+    try {
+      const hotelId = req.params.hotelId;
+      const bookings = await this.BookingUseCase.getHotelBookings(hotelId);
       res.status(bookings.status).json({
         success: true,
         result: { ...bookings.data },

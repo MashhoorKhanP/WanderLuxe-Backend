@@ -2,20 +2,28 @@ import { Request, Response } from "express";
 import UserUserCase from "../../useCases/userUseCase";
 import GenerateEmail from "../../infrastructure/services/sendMail";
 import GenerateOTP from "../../infrastructure/services/generateOtp";
+import { SocketManager } from "../../infrastructure/services/socket";
+import ChatUseCase from "../../useCases/chatUseCase";
+
 
 class UserController {
   private userUseCase: UserUserCase;
   private GenerateEmail: GenerateEmail;
   private GenerateOTP: GenerateOTP;
-
+  private SocketManager: SocketManager;
+  private chatUseCase: ChatUseCase;
   constructor(
     userUseCase: UserUserCase,
     GenerateEmail: GenerateEmail,
-    GenerateOTP: GenerateOTP
+    GenerateOTP: GenerateOTP,
+    SocketManager: SocketManager,
+    chatUseCase: ChatUseCase
   ) {
     this.userUseCase = userUseCase;
     this.GenerateEmail = GenerateEmail;
     this.GenerateOTP = GenerateOTP;
+    this.SocketManager = SocketManager
+    this.chatUseCase = chatUseCase
   }
 
   async signUp(req: Request, res: Response) {
@@ -237,7 +245,146 @@ class UserController {
     }
   }
 
+  async addMoneyToWallet(req: Request, res: Response) {
+    try {
+      req.app.locals.wallet = req.body;
+      const payment= await this.userUseCase.addMoneyToWallet(req.body);
+      if (payment) {
+        return res.status(payment.status).json({
+          success: true,
+          result: { ...payment.data },
+        });
+      } else {
+        res.status(400).json({ success: false, result: {} });
+      }
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
 
+  async walletWebhook(req: Request, res: Response) {
+    try {
+      
+      const localData = req.app.locals.wallet;
+      console.log('req.body of walletWebhook',req.body);
+      
+      let transactionId;
+      let receiptUrl;
+      if(req.body.type === 'charge.succeeded'){
+
+        transactionId = req.body.data.object.payment_intent;
+        receiptUrl = req.body.data.object.receipt_url;
+  
+        console.log('transactionId', transactionId,'receiptUrl',receiptUrl)
+      }
+      const confirmPayment= await this.userUseCase.confirmWalletPayment(req as any);
+      if (confirmPayment) {
+        const added = await this.userUseCase.addMoney(localData,transactionId);
+        req.app.locals.updatedWalletData = added.data.message;
+        let messageData = JSON.parse(JSON.stringify(added.data.message));
+        console.log('messageData', messageData); // Adjust this based on your data
+        this.SocketManager.io.emit('message', messageData);
+
+
+        return res.status(added.status).json({
+          success: true,
+          result: { ...added.data },
+        });
+      } else {
+        res.status(400).json({ success: false, result: {} });
+      }
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async getUpdatedUser(req: Request, res: Response) {
+    try {
+      
+      const userId = req.params.userId;
+      console.log("getUpdateduser,userId", userId);
+      const updatedUser = await this.userUseCase.getUpdatedUser(
+        userId,
+      );
+
+      console.log("updatedUser from controller", updatedUser);
+      res.status(200).json({
+        success: true,
+        result: { ...updatedUser.data },
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  //Chat
+  async newConversation(req:Request,res:Response){
+    try {
+      
+     const members:any = [req.body.senderId,req.body.receiverId]
+     console.log('req.body.senderId',req.body.senderId, 'req.body.receiverId',req.body.receiverId)
+     const existing = await this.chatUseCase.checkExisting(members);
+     if (!existing?.length) {
+      console.log("entered");
+      const conversation = await this.chatUseCase.newConversation(members)
+      res.status(200).json({
+        success: true,
+        result: { ...conversation.data },
+      });
+    }
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async getConversations(req:Request,res:Response){
+    try {
+     console.log('conversationId',req.params.userId);
+     const conversations = await this.chatUseCase.getConversations(req.params.userId)
+     
+      res.status(200).json({
+        success: true,
+        result: { ...conversations.data },
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async addMessage(req:Request,res:Response){
+    try {
+     console.log('addmessageReq.body',req.body);
+     const messages = await this.chatUseCase.addMessage({...req.body})
+    
+      res.status(200).json({
+        success: true,
+        result: { ...messages.data },
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
+  async getMessages(req:Request,res:Response){
+    try {
+     console.log('addmessageReq.body',req.params.conversationId);
+     const messages = await this.chatUseCase.getMessages(req.params.conversationId)
+    
+      res.status(200).json({
+        success: true,
+        result: { ...messages.data },
+      });
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
 
 }
 

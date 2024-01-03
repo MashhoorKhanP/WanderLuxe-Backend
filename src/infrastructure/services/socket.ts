@@ -9,10 +9,10 @@ interface User{
 
 export class SocketManager {
   private httpServer: HttpServer;
-  private io: Server;
+  public io: Server;
   private userRespository: UserRepository
   private users:User[]=[]
-
+  
   constructor(httpServer: HttpServer,userRepository: UserRepository) {
     this.httpServer = httpServer;
     this.userRespository=userRepository
@@ -41,10 +41,17 @@ export class SocketManager {
       }
     });
 
-    socket.on("disconnect", () => {
-      this.removeUser(socket.id);
-      console.log("a user disconnected!");
-    });
+    // socket.on("connection", (connectedSocket) => {
+    //   console.log("Server-Client Connected!", connectedSocket.id);
+    //   connectedSocket.emit('connection', 'connected');
+    // });
+
+    
+    
+    // socket.on("disconnect", () => {
+    //   this.removeUser(socket.id);
+    //   console.log("a user disconnected!");
+    // });
   };
 
   private addUser(userId: string, socketId: string): void {

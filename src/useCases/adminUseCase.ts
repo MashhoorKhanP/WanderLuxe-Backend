@@ -58,6 +58,7 @@ class AdminUseCase {
           email:adminData.email,
           firstName:adminData.firstName,
           lastName:adminData.lastName,
+          profileImage:adminData.profileImage
 
         }
         return {

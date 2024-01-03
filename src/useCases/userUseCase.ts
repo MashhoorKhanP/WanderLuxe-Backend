@@ -4,20 +4,24 @@ import UserRepository from "../infrastructure/repositories/userRepository";
 import Encrypt from "../infrastructure/services/bcryptPassword";
 import JWTToken from "../infrastructure/services/generateToken";
 import mongoose from "mongoose";
+import PaymentRepository from "../infrastructure/services/stripe";
 
 class UserUserCase {
   private UserRepository: UserRepository;
   private Encrypt: Encrypt;
   private JWTToken: JWTToken;
+  private PaymentRepository: PaymentRepository;
 
   constructor(
     UserRepository: UserRepository,
     Encrypt: Encrypt,
-    JWTToken: JWTToken
+    JWTToken: JWTToken,
+    PaymentRepository:PaymentRepository
   ) {
     this.UserRepository = UserRepository;
     this.Encrypt = Encrypt;
     this.JWTToken = JWTToken;
+    this.PaymentRepository = PaymentRepository;
   }
 
   async googleSignUp(email: string) {
@@ -184,6 +188,7 @@ class UserUserCase {
           wishlist:userData.wishlist,
           wallet:userData.wallet,
           mobile:userData.mobile,
+          walletHistory:userData.walletHistory
 
         }
         return {
@@ -234,6 +239,7 @@ class UserUserCase {
         wishlist:updatedUser.wishlist,
         wallet:updatedUser.wallet,
         mobile:updatedUser.mobile,
+        walletHistory:updatedUser.walletHistory
 
       }
       return {
@@ -277,6 +283,7 @@ class UserUserCase {
         wishlist:resultUser.wishlist,
         wallet:resultUser.wallet,
         mobile:resultUser.mobile,
+        walletHistory:resultUser.walletHistory
 
         }
       }
@@ -303,6 +310,7 @@ class UserUserCase {
         wishlist:resultUser.wishlist,
         wallet:resultUser.wallet,
         mobile:resultUser.mobile,
+        walletHistory:resultUser.walletHistory
 
         }
       }
@@ -345,6 +353,7 @@ class UserUserCase {
         wishlist:updatedUser.wishlist,
         wallet:updatedUser.wallet,
         mobile:updatedUser.mobile,
+        walletHistory:updatedUser.walletHistory
 
         }
       }
@@ -361,6 +370,126 @@ class UserUserCase {
         data: {
           success: false,
           message: "Entered wrong current password/ password not found!",
+        },
+      };
+    }
+  }
+
+  async addMoneyToWallet(addMoneyToWallet:any) {
+    if (addMoneyToWallet) {
+      const paymentData = await this.PaymentRepository.confirmAddMoneyToWalletPayment(addMoneyToWallet)
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message:paymentData,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          status: false,
+          success: false,
+          message: "Something went wrong in payment!",
+        },
+      };
+    }
+  }
+
+  async confirmWalletPayment(request:any) {
+    const paymentSuccess = await this.PaymentRepository.addMoneyToWalletPaymentSuccess(request)
+    console.log('reached confirmPayment UseCase',paymentSuccess);
+    if(!paymentSuccess){
+      console.log("Payment faileddddd");
+      return null;
+    }else{
+      return true;
+    }
+  }
+
+  async addMoney(addMoneyToWalletDetails:any,transactionId:string){
+    console.log('addMoneyToWalletDetails',addMoneyToWalletDetails)
+    console.log('transactionId',transactionId)
+    const user=await this.UserRepository.findById(addMoneyToWalletDetails.userId);
+    
+    const walletHistory = {
+      transactionDate: new Date(),
+      transactionDetails: 'Deposited via Stripe',
+      transactionType: 'Credit',
+      transactionId:transactionId,
+      transactionAmount:addMoneyToWalletDetails.amount,
+      currentBalance: user?.wallet + addMoneyToWalletDetails.amount
+  }
+    const updatedUser =await this.UserRepository.findByIdAndUpdateWallet(addMoneyToWalletDetails.userId,addMoneyToWalletDetails.amount,walletHistory);
+    
+    const safedUserData = {
+      _id:updatedUser?._id,
+        firstName:updatedUser?.firstName,
+        lastName:updatedUser?.lastName,
+        email:updatedUser?.email,
+        profileImage:updatedUser?.profileImage,
+        isVerified:updatedUser?.isVerified,
+        isBlocked:updatedUser?.isBlocked,
+        isGoogle:updatedUser?.isGoogle,
+        wishlist:updatedUser?.wishlist,
+        wallet:updatedUser?.wallet,
+        mobile:updatedUser?.mobile,
+        walletHistory:updatedUser?.walletHistory
+    }
+    if(updatedUser){
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message:safedUserData,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          status: false,
+          success: false,
+          message: "Something went wrong in adding money to wallet!",
+        },
+      };
+    }
+  }
+
+  async getUpdatedUser(id: string) {
+    const updatedUser = await this.UserRepository.findById(
+      id
+    );
+    if (updatedUser) {
+      const safedUserData = {
+        _id:updatedUser._id,
+        firstName:updatedUser.firstName,
+        lastName:updatedUser.lastName,
+        email:updatedUser.email,
+        profileImage:updatedUser.profileImage,
+        isVerified:updatedUser.isVerified,
+        isBlocked:updatedUser.isBlocked,
+        isGoogle:updatedUser.isGoogle,
+        wishlist:updatedUser.wishlist,
+        wallet:updatedUser.wallet,
+        mobile:updatedUser.mobile,
+        walletHistory:updatedUser.walletHistory
+
+      }
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message:safedUserData,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          success: false,
+          message: "Updating user profile failed!",
         },
       };
     }

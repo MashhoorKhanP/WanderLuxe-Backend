@@ -75,6 +75,19 @@ class UserRepository implements UserRepo {
     return updatedUser;
   }
 
+  async findByIdAndUpdateWallet(_id: string,amount:number,walletHistory:any): Promise<IUser | null> {
+    const updatedUser = await UserModel.findByIdAndUpdate({_id: _id},
+      {
+          $inc:{
+              wallet: amount
+          },
+          $push:{
+              walletHistory
+          }
+      })
+    return updatedUser;
+  }
+  
 }
 
 export default UserRepository;

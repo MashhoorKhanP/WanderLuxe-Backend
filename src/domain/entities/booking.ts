@@ -4,13 +4,14 @@
     email : string;
     mobile : string;
     roomId: string;
+    hotelId:string;
     userId: string;
     roomType: string;
     hotelName: string;
     roomImage:string,
     totalRoomsCount:number,
-    checkInDate:Date|string,
-    checkOutDate:Date|string,
+    checkInDate:Date|any,
+    checkOutDate:Date|any,
     checkInTime:string | any,
     checkOutTime:string | any,
     appliedCouponId:string,

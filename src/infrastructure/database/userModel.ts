@@ -12,6 +12,26 @@ const userSchema: Schema = new Schema<IUser & Document>(
     isVerified: { type: Boolean, default: false },
     isBlocked: { type: Boolean, default: false },
     isGoogle: { type: Boolean, default: false },
+    walletHistory: [{
+      transactionDate: {
+          type: Date,
+      },
+      transactionDetails: {
+          type: String
+      },
+      transactionType: {
+          type: String
+      },
+      transactionAmount: {
+          type: Number
+      },
+      currentBalance: {
+          type: Number
+      },
+      transactionId: {
+        type: String
+    },
+  }],
     wishlist: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Hotel'

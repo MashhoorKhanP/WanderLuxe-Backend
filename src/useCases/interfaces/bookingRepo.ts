@@ -5,10 +5,13 @@ interface BookingRepo{
   findById(_id:string):Promise<IBooking | null>;
   findAllBookings():Promise<{}[] | null>;
   findBookingsByUserId(userId:string):Promise<IBooking[] | null>;
+  findBookingsByHotelId(hotelId:string):Promise<IBooking[] | null>;
   findByIdAndUpdate(
       _id: string,
       reqBody: object
-    ): Promise<IBooking | null>;
+    ): Promise<IBooking | any>;
+  findByIdAndUpdateBookingStatus(transactionId: string, status: string): Promise<IBooking | null>
+
   // findAndDeleteCoupon(couponId: string): Promise<string | null>
 }
 

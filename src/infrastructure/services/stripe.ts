@@ -34,6 +34,7 @@ class PaymentRepository {
     totalAmount} = bookingData;
     console.log('bookingData', bookingData);
       const session = await stripe.checkout.sessions.create({
+        payment_method_types:['card'],
         line_items: [
           {
             price_data: {
@@ -68,6 +69,44 @@ class PaymentRepository {
       // });
       return session;
   }
+
+  async confirmAddMoneyToWalletPayment(addMoneyToWalletData:any) {
+    const {userId,amount} = addMoneyToWalletData;
+    console.log('addMoneyToWalletData', addMoneyToWalletData);
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types:['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'inr',
+              product_data: {
+                name: 'Add Money To Wallet',
+                images:['https://partner.visa.com/content/dam/gpp/homepage/card-lab-header-v2-2x.png'],
+                description:`An amount of ₹${amount} will be credited to your wallet after this payment.`,
+                metadata:{
+                  userId
+                }
+              },
+              unit_amount: amount*100,
+            },
+            
+            quantity: 1,
+          },
+          
+        ],
+        billing_address_collection: 'required',
+        mode: 'payment',
+        success_url: `${process.env.CLIENT_URL}/user/payment-success`,
+        cancel_url:`${process.env.CLIENT_URL}/user/payment-failed` , // check ensure here
+      });
+
+      console.log('session',session)
+      // res.status(200).json({
+      //   success: true,
+      //   result: {...session},
+      // });
+      return session;
+  }
   
   async paymentSuccess(request:any){
     // console.log('request',request.body)
@@ -79,7 +118,37 @@ class PaymentRepository {
       return false;
     }
 
-    const endpointSecret = "whsec_82a284623372fed5412eddcdbce9bcfc485e3e1fe3dfac4cc9a7940d9c7f1c81";
+    const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET as string;
+    const header = stripe.webhooks.generateTestHeaderString({
+      payload:payloadString,
+      secret:endpointSecret
+    });
+
+    let event;
+    event = stripe.webhooks.constructEvent(
+      payloadString,
+      header,
+      endpointSecret
+    )
+    // console.log('Webhook verified', event)
+    if(event.type == 'charge.succeeded'){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  async addMoneyToWalletPaymentSuccess(request:any){
+    // console.log('request',request.body)
+    const payload = request.body;
+    const payloadString = JSON.stringify(payload,null,2);
+    const signature = request.headers["stripe-signature"];
+
+    if(typeof signature !== "string"){
+      return false;
+    }
+
+    const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET as string;
     const header = stripe.webhooks.generateTestHeaderString({
       payload:payloadString,
       secret:endpointSecret

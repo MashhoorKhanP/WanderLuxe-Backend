@@ -8,7 +8,15 @@ interface IUser {
   profileImage: string;
   isVerified?: boolean;
   isBlocked?: boolean;
-  wallet?: number | null;
+  wallet?: number | any;
+  walletHistory?: [{
+    transactionDate:Date,
+    transactionDetails: string
+    transactionType: string
+    transactionAmount: number
+    currentBalance: number
+    transactionId:string
+}],
   wishlist?: [];
   isGoogle?: boolean;
 }

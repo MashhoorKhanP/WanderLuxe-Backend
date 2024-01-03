@@ -39,6 +39,18 @@ class CouponRepository implements CouponRepo {
     });
     return coupon;
   }
+
+  async findByIdAndUpdateCount(_id: string): Promise<ICoupon | null> {
+    const coupon = await CouponModel.findByIdAndUpdate(
+      _id,
+      { $inc: { couponCount: -1 } }, // Use $inc to decrease couponCount by 1
+      { new: true }
+    );
+  
+    return coupon;
+  }
+
+  
 }
 
 export default CouponRepository;

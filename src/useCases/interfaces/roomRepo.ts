@@ -9,7 +9,10 @@ interface RoomRepo{
     _id: string,
     reqBody: object
   ): Promise<IRoom | null>;
-  
+  findByIdAndUpdateRoomsCount(roomId:string,roomsCount:number):Promise<IRoom | null>;
+  // findByIdAndIncreaseRoomsCount(roomId:string,roomsCount:number):Promise<IRoom | null>;
+  findByIdAndUpdateRoomStatus(transactionId: string, status: string): Promise<IRoom | null>
+
 }
 
 export default RoomRepo;

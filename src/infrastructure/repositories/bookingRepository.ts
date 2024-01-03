@@ -26,14 +26,29 @@ class BookingRepository implements BookingRepo {
       const userBookings = await BookingModel.find({userId:userId}).sort({_id:-1});
       return userBookings;
   }
+  
+
+  async findBookingsByHotelId(hotelId: string): Promise<IBooking[] | null> {
+    const hotelBookings = await BookingModel.find({hotelId:hotelId}).sort({_id:-1});
+    return hotelBookings;
+  }
 
   async findByIdAndUpdate(
     _id: string,
     reqBody: object
-  ): Promise<IBooking | null> {
+  ): Promise<IBooking | any> {
     const booking = await BookingModel.findByIdAndUpdate(_id, reqBody, {
       new: true,
     });
+    return booking;
+  }
+
+  async findByIdAndUpdateBookingStatus(transactionId: string, status: string): Promise<IBooking | null> {
+    console.log('transactionId from BookingRepository: ', transactionId);
+    const booking = await BookingModel.findOneAndUpdate(
+      { transactionId:transactionId }, // Assuming your field is named 'roomId'
+      { status: status },
+      { new: true })
     return booking;
   }
   

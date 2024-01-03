@@ -43,6 +43,26 @@ class RoomRepository implements RoomRepo {
     });
     return room;
   }
+
+  async findByIdAndUpdateRoomsCount(_id: string, count: number): Promise<IRoom | null> {
+    console.log('count from roomRepository: ',count);
+    const room = await RoomModel.findByIdAndUpdate(_id,{$inc:{roomsCount: count}},
+    {new:true})
+    return room;
+  }
+
+  async findByIdAndIncreaseRoomsCount(_id: string, count: number): Promise<IRoom | null> {
+    const room = await RoomModel.findByIdAndUpdate(_id,{$inc:{roomsCount: count}},
+    {new:true})
+    return room;
+  }
+
+  async findByIdAndUpdateRoomStatus(_id: string, status: string): Promise<IRoom | null> {
+    console.log('roomId from BookingRepository: ', _id);
+    const room = await RoomModel.findByIdAndUpdate(_id,{ status: status },
+    { new: true })
+    return room;
+  }
 }
 
 export default RoomRepository;
