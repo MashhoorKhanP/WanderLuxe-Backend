@@ -22,6 +22,9 @@ import PaymentRepository from "../services/stripe";
 import ConversationRepository from "../repositories/conversationRepository";
 import ChatUseCase from "../../useCases/chatUseCase";
 import MessageRepository from "../repositories/messageRepository";
+import BannerRepository from "../repositories/bannerRepository";
+import BannerUseCase from "../../useCases/bannerUseCase";
+import BannerController from "../../adapter/controllers/bannerController";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -32,6 +35,7 @@ const hotelRepository = new HotelRepository();
 const roomRepository = new RoomRepository();
 const couponRepository = new CouponRepository();
 const bookingRepository = new BookingRepository();
+const bannerRepository = new BannerRepository();
 
 const adminCase = new AdminUseCase(
   adminRepository,
@@ -47,12 +51,14 @@ const conversationRepository = new ConversationRepository();
 const messageRepository = new MessageRepository();
 const conversationCase = new ChatUseCase(conversationRepository,messageRepository,userRepository,adminRepository)
 const bookingCase = new BookingUseCase(bookingRepository,paymentRepository,roomRepository,couponRepository,userRepository);
+const bannerCase = new BannerUseCase(bannerRepository);
 
 const adminController = new AdminController(adminCase,conversationCase);
 const hotelController = new HotelController(hotelCase);
 const roomController = new RoomController(roomCase);
 const couponController = new CouponController(couponCase);
 const bookingController = new BookingController(bookingCase);
+const bannerController = new BannerController(bannerCase);
 
 const router = express.Router();
 
@@ -95,6 +101,11 @@ router.delete("/coupons/delete-coupon/:couponId", adminAuth, (req, res) =>
 router.patch("/bookings/update-booking/:bookingId", adminAuth, (req, res) =>
   bookingController.updateBooking(req, res)
 );
+
+router.patch("/banners/update-banners/:bannerId", adminAuth, (req, res) =>
+  bannerController.updateBanners(req, res)
+);
+
 
 //chat
 router.post('/conversation',(req,res) => adminController.newConversation(req,res));

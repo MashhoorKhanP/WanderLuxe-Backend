@@ -28,9 +28,7 @@ class UserController {
 
   async signUp(req: Request, res: Response) {
     try {
-      const verifyUser = await this.userUseCase.signUp(req.body.email);
-      console.log("Entered inside signUp Controller", verifyUser);
-
+      const verifyUser = await this.userUseCase.signUp(req.body.email,req.body.mobile);
       if (
         verifyUser?.data?.message &&
         typeof verifyUser.data.message === "object" &&
@@ -78,7 +76,6 @@ class UserController {
   async googleSignUp(req: Request, res: Response)  {
     try {
       const verifyUser = await this.userUseCase.googleSignUp(req.body.email);
-
       if (
         verifyUser?.data?.message &&
         typeof verifyUser.data.message === "object" &&
@@ -106,30 +103,52 @@ class UserController {
     }
   }
 
+
+
   async userVerification(req: Request, res: Response) {
     try {
-      if (req.body.otp === req.app.locals.otp) {
-        console.log(
-          "Req.body.otp",
-          req.body.otp,
-          "Req.app.locals",
-          req.app.locals.otp
-        );
-        const user = await this.userUseCase.verifyUser(req.app.locals.userData);
+      const isForgotPassword = req.query.forgotPassword;
+      if(isForgotPassword === 'false'){
+        if (req.body.otp.otp === req.app.locals.otp) {
+          console.log('Req.body.otp',req.body.otp.otp ,"Req.app.locals",req.app.locals.otp);
+          const user = await this.userUseCase.verifyUser(req.app.locals.userData);
+          if (user) {
+            req.app.locals.userData = null;
+            req.app.locals.otp = null;
+            res.status(user.status).json(user.data);
+          }
+        } else {
+          console.log('Else case invalid otp register user')
+          res.status(400).json(
+            { success: false,
+            data:{
+              message: "Invalid otp"
+            }
+          });
+        }
+      }else{
+        console.log('isForgotPassword',isForgotPassword);
+      console.log('outsideReq.body.otp',req.body.otp.otp ,"Req.app.locals",req.app.locals.otp);
+      if (req.body.otp.otp === req.app.locals.otp) {
+        console.log('Req.body.otp',req.body.otp.otp ,"Req.app.locals",req.app.locals.otp);
+        const user = await this.userUseCase.verifyForgotPasswordUser(req.app.locals.forgotPasswordData,isForgotPassword as string);
+        console.log('user from verify user',user);
         if (user) {
           req.app.locals.userData = null;
           req.app.locals.otp = null;
-          res.status(user.status).json({ ...user.data });
+          res.status(user.status).json(user.data);
         }
       } else {
-        console.log("Else case invalid otp");
-        res.status(400).json({
-          success: false,
-          data: {
-            message: "Invalid otp",
-          },
+        console.log('Else case invalid otp')
+        res.status(400).json(
+          { success: false,
+          data:{
+            message: "Invalid otp"
+          }
         });
       }
+      }
+      
     } catch (error) {
       const typedError: Error = error as Error;
       res.status(400).json(typedError.message);
@@ -154,6 +173,8 @@ class UserController {
       res.status(400).json(typedError.message);
     }
   }
+
+
 
   async login(req: Request, res: Response) {
     try {
@@ -245,6 +266,40 @@ class UserController {
     }
   }
 
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      console.log('req.body',req.body);
+      const {email,newPassword} = req.body;
+      req.app.locals.forgotPasswordData = req.body;
+      console.log("userEmail",email);
+      const verifiedUser = await this.userUseCase.forgotPassword(
+        email,
+        newPassword
+      );
+      if (verifiedUser.data.status === true) {
+        req.app.locals.userData = req.body;
+        const otp = this.GenerateOTP.generateOtp();
+        req.app.locals.otp = otp;
+        this.GenerateEmail.sendMail(req.body.email, otp);
+        console.log(otp);
+
+        setTimeout(() => {
+          req.app.locals.otp = null;
+        }, 2 * 60000);
+
+        res.status(verifiedUser.status).json(verifiedUser.data);
+      } else {
+        res.status(400).json({
+          success: false,
+          result: { ...(verifiedUser.data || {}) }, // Ensure that verifyUser.data is defined
+        });
+      }
+    } catch (error) {
+      const typedError = error as Error;
+      res.status(400).json({ success: false, error: typedError.message });
+    }
+  }
+
   async addMoneyToWallet(req: Request, res: Response) {
     try {
       req.app.locals.wallet = req.body;
@@ -304,12 +359,10 @@ class UserController {
     try {
       
       const userId = req.params.userId;
-      console.log("getUpdateduser,userId", userId);
       const updatedUser = await this.userUseCase.getUpdatedUser(
         userId,
       );
 
-      console.log("updatedUser from controller", updatedUser);
       res.status(200).json({
         success: true,
         result: { ...updatedUser.data },
@@ -323,12 +376,9 @@ class UserController {
   //Chat
   async newConversation(req:Request,res:Response){
     try {
-      
      const members:any = [req.body.senderId,req.body.receiverId]
-     console.log('req.body.senderId',req.body.senderId, 'req.body.receiverId',req.body.receiverId)
      const existing = await this.chatUseCase.checkExisting(members);
      if (!existing?.length) {
-      console.log("entered");
       const conversation = await this.chatUseCase.newConversation(members)
       res.status(200).json({
         success: true,
@@ -343,9 +393,7 @@ class UserController {
 
   async getConversations(req:Request,res:Response){
     try {
-     console.log('conversationId',req.params.userId);
      const conversations = await this.chatUseCase.getConversations(req.params.userId)
-     
       res.status(200).json({
         success: true,
         result: { ...conversations.data },
@@ -358,9 +406,7 @@ class UserController {
 
   async addMessage(req:Request,res:Response){
     try {
-     console.log('addmessageReq.body',req.body);
      const messages = await this.chatUseCase.addMessage({...req.body})
-    
       res.status(200).json({
         success: true,
         result: { ...messages.data },
@@ -373,7 +419,6 @@ class UserController {
 
   async getMessages(req:Request,res:Response){
     try {
-     console.log('addmessageReq.body',req.params.conversationId);
      const messages = await this.chatUseCase.getMessages(req.params.conversationId)
     
       res.status(200).json({

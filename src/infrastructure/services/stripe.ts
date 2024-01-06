@@ -58,8 +58,8 @@ class PaymentRepository {
         ],
         billing_address_collection: 'required',
         mode: 'payment',
-        success_url: `${process.env.CLIENT_URL}/user/payment-success`,
-        cancel_url:`${process.env.CLIENT_URL}/user/payment-failed` , // check ensure here
+        success_url: `${process.env.CLIENT_URL}/payment-success`,
+        cancel_url:`${process.env.CLIENT_URL}/payment-failed` , // check ensure here
       });
 
       console.log('session',session)
@@ -96,8 +96,8 @@ class PaymentRepository {
         ],
         billing_address_collection: 'required',
         mode: 'payment',
-        success_url: `${process.env.CLIENT_URL}/user/payment-success`,
-        cancel_url:`${process.env.CLIENT_URL}/user/payment-failed` , // check ensure here
+        success_url: `${process.env.CLIENT_URL}/payment-success`,
+        cancel_url:`${process.env.CLIENT_URL}/payment-failed` , // check ensure here
       });
 
       console.log('session',session)

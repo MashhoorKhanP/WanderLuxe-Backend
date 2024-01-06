@@ -3,7 +3,7 @@ import UserModel from "../database/userModel";
 import UserRepo from "../../useCases/interfaces/userRepo";
 
 class UserRepository implements UserRepo {
-  async save(user: IUser): Promise<IUser> {
+  async save(user: IUser): Promise<IUser | any> {
     const newUser = new UserModel(user);
     await newUser.save();
     return newUser;
@@ -11,6 +11,11 @@ class UserRepository implements UserRepo {
 
   async findByEmail(email: string): Promise<IUser | null> {
     const user = await UserModel.findOne({ email });
+    return user;
+  }
+
+  async findByMobile(mobile: string): Promise<IUser | null> {
+    const user = await UserModel.findOne({ mobile });
     return user;
   }
 

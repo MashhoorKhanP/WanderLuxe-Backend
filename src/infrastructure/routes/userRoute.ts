@@ -28,6 +28,9 @@ import ConversationRepository from "../repositories/conversationRepository";
 import ChatUseCase from "../../useCases/chatUseCase";
 import MessageRepository from "../repositories/messageRepository";
 import AdminRepository from "../repositories/adminRepository";
+import BannerRepository from "../repositories/bannerRepository";
+import BannerUseCase from "../../useCases/bannerUseCase";
+import BannerController from "../../adapter/controllers/bannerController";
 
 const encrypt = new Encrypt();
 const jwt = new JWTToken();
@@ -43,11 +46,13 @@ const bookingRepository = new BookingRepository();
 const adminRepository = new AdminRepository();
 const conversationRepository = new ConversationRepository();
 const messageRepository = new MessageRepository();
+const bannerRepository = new BannerRepository();
 const server = http.createServer(express()); // Create an HTTP server instance
 const socket = new SocketManager(server, userRepository);
 
 
 const hotelCase = new HotelUseCase(hotelRepository);
+const bannerCase = new BannerUseCase(bannerRepository);
 const roomCase = new RoomUseCase(roomRepository);
 const couponCase = new CouponUseCase(couponRepository);
 const userCase = new UserUserCase(userRepository, encrypt, jwt,paymentRepository);
@@ -59,6 +64,7 @@ const hotelController = new HotelController(hotelCase);
 const roomController = new RoomController(roomCase);
 const couponController = new CouponController(couponCase);
 const bookingController = new BookingController(bookingCase);
+const bannerController = new BannerController(bannerCase);
 
 const router = express.Router();
 
@@ -71,6 +77,7 @@ router.patch("/profile/:userId", auth, (req, res) =>
   userController.updateProfile(req, res)
 );
 
+router.get('/find-banners',(req, res) => bannerController.getBanners(req, res));
 router.get("/find-hotels", (req, res) => hotelController.getHotels(req, res));
 router.get("/find-rooms", (req, res) => roomController.getRooms(req, res));
 router.get("/find-coupons",(req,res) => couponController.getCoupons(req,res));
@@ -88,6 +95,10 @@ router.patch("/add-remove/wishlist", auth, (req, res) =>
 router.patch("/change-password", auth, (req, res) =>
   userController.updatePassword(req, res)
 );
+router.post("/forgot-password", (req, res) =>
+  userController.forgotPassword(req, res)
+);
+
 
 router.post("/wallet-payment",auth,(req,res) => bookingController.walletPayment(req,res));
 router.post("/payment",auth,(req,res) => bookingController.payment(req,res));

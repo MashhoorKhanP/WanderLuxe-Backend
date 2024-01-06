@@ -31,7 +31,6 @@ class BookingController {
   async payment(req: Request, res: Response) {
     try {
       req.app.locals.booking = req.body;
-      req.app.locals.isWalletBalanceUsed = req.query.isWalletBalanceUsed;
       const payment= await this.BookingUseCase.payment(req.body);
       if (payment) {
         return res.status(payment.status).json({
@@ -50,7 +49,8 @@ class BookingController {
   async webhook(req: Request, res: Response) {
     try {
       const localData = req.app.locals.booking;
-      const isWalletBalanceUsed = req.app.locals.isWalletBalanceUsed
+      console.log('localData',localData);
+      console.log('isWalletBalanceUsed,req.app.locals',localData.isWalletBalanceUsed);
       console.log('req.body of webhook',req.body);
       
       let transactionId;
@@ -64,7 +64,7 @@ class BookingController {
       }
       const confirmPayment= await this.BookingUseCase.confirmPayment(req as any);
       if (confirmPayment) {
-        const booking = await this.BookingUseCase.bookRoom(localData,transactionId,receiptUrl,isWalletBalanceUsed);
+        const booking = await this.BookingUseCase.bookRoom(localData,transactionId,receiptUrl,localData.isWalletBalanceUsed);
         return res.status(booking.status).json({
           success: true,
           result: { ...booking.data },

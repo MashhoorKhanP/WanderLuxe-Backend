@@ -86,9 +86,9 @@ class UserUserCase {
     }
   }
 
-  async signUp(email: string) {
+  async signUp(email: string,mobile:string) {
     const userExists = await this.UserRepository.findByEmail(email);
-
+    const sameMobileExits = await this.UserRepository.findByMobile(mobile);
     if (userExists) {
       return {
         status: 400,
@@ -98,7 +98,16 @@ class UserUserCase {
           message: "User already exists!",
         },
       };
-    } else {
+    } if (sameMobileExits) {
+      return {
+        status: 400,
+        data: {
+          status: false,
+          success: false,
+          message: "Mobile Number already exist!",
+        },
+      };
+    }else {
       // If the user doesn't exist, return success with a verification message
       return {
         status: 200,
@@ -112,10 +121,12 @@ class UserUserCase {
   }
 
   async verifyUser(user: IUser) {
+    console.log("useCase", user);
     var token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
+      console.log("newUser", newUser);
       const role = "user";
       if (user)
         token = this.JWTToken.generateToken(
@@ -126,6 +137,7 @@ class UserUserCase {
           user.profileImage,
           role
         );
+      
       await this.UserRepository.save(newUser);
 
       return {
@@ -143,6 +155,32 @@ class UserUserCase {
         },
       };
     }
+  }
+
+
+
+  async verifyForgotPasswordUser(user:any,isForgotPassword: string) {
+    console.log('user from verifyuser userUseCase',user.email);
+    
+      const userData:any = await this.verifyForgotPassword(user.email,user.newPassword);
+        if(userData){
+          return {
+          status: 200,
+          data: {
+            status: true,
+            success: true,
+            message: userData,
+          },
+        }
+      }else{
+        return {
+          status: 400,
+          data: {
+            success: false,
+            message: "User not found, Something went wrong",
+          },
+        };
+      }
   }
 
   async login(user: IUser) {
@@ -372,6 +410,63 @@ class UserUserCase {
           message: "Entered wrong current password/ password not found!",
         },
       };
+    }
+  }
+
+  async forgotPassword(email:string, newPassword:string){
+    const userExists = await this.UserRepository.findByEmail(email);
+
+    if (userExists) {
+      
+      return {
+        status: 200,
+        data: {
+          status: true,
+          success: true,
+          message: "Verification OTP sent to your email",
+        },
+      };
+    } else {
+      // If the user doesn't exist, return success with a verification message
+      return {
+        status: 400,
+        data: {
+          status: false,
+          success: false,
+          message: "User not found, Wrong Email id!",
+        },
+      };
+    }
+  }
+
+  async verifyForgotPassword(email:string,newPassword: string) {
+    
+    const user:any= await this.UserRepository.findByEmail(email);
+   
+      const newHashedPassword = await this.Encrypt.generateHash(newPassword);
+      const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(user._id,newHashedPassword);
+      console.log('updatedUser',updatedUser);
+      let safedUserData;
+      if(updatedUser){
+      safedUserData = {
+        _id:updatedUser._id,
+        firstName:updatedUser.firstName,
+        lastName:updatedUser.lastName,
+        email:updatedUser.email,
+        profileImage:updatedUser.profileImage,
+        isVerified:updatedUser.isVerified,
+        isBlocked:updatedUser.isBlocked,
+        isGoogle:updatedUser.isGoogle,
+        wishlist:updatedUser.wishlist,
+        wallet:updatedUser.wallet,
+        mobile:updatedUser.mobile,
+        walletHistory:updatedUser.walletHistory
+
+        }
+      
+      return safedUserData;
+    }else {
+      return;
     }
   }
 

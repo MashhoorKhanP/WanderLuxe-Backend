@@ -50,10 +50,10 @@ const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction
       console.log('userToken',token);
       if(token){
           const decoded = jwt.decode(token) as JwtPayload;
-          console.log('Decoded User Token',decoded);
+          // console.log('Decoded User Token',decoded);
           if(decoded.role==='user'){
               const user = await userRepo.findById(decoded._id as string);
-            console.log('User',user)
+            // console.log('User',user)
             if(user && decoded.role === 'user'){
               req.userId = user._id;
               if(user.isBlocked){

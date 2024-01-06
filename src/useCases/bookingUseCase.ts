@@ -64,7 +64,8 @@ class BookingUseCase {
     console.log('transactionId',transactionId)
     console.log('receiptUrl',receiptUrl)
     let booking;
-    if(isWalletBalanceUsed){
+    console.log('isWalletBalanceUsed',isWalletBalanceUsed);
+    if(isWalletBalanceUsed===true){
       const user=await this.UserRepository.findById(bookingDetails.userId);
     
     const walletHistory = {
@@ -179,8 +180,8 @@ class BookingUseCase {
         status: 200,
         data: {
           success: true,
-          successUrl:`${process.env.CLIENT_URL}/user/payment-success`,
-          failedUrl:`${process.env.CLIENT_URL}/user/payment-failed`,
+          successUrl:`${process.env.CLIENT_URL}/payment-success`,
+          failedUrl:`${process.env.CLIENT_URL}/payment-failed`,
           message:booking,
         },
       };

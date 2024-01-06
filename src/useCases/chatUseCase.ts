@@ -43,15 +43,15 @@ class ChatUseCase{
     }
     async checkExisting(members: Array<string>) {
       const isExisting = await this.ConversationRepository.findExisting(members)
-      console.log('isExisting',isExisting);
+      
       return isExisting
     }
 
     async getConversations (id:string){
       const conversations = await this.ConversationRepository.findByUserId(id);
-      console.log(conversations,'conversations from chatuseCase----')
+      
       const lastMessage = await this.MessageRepository.getLastMessages();
-      console.log('lastMessage----',lastMessage)
+     
       const data = {
         conv:conversations,
         lastMessages:lastMessage
@@ -81,10 +81,8 @@ class ChatUseCase{
 
     async addMessage (reqBody:{conversationId:string,sender:string,text:string}){
       const conversations = await this.ConversationRepository.findByUserId(reqBody.sender);
-      console.log(conversations,'conversations from chatuseCase addMessage')
-      console.log("Sender:", reqBody.sender);
+      
       const receiverId = conversations[0].members.find((id:string) => id !== reqBody.sender)
-      console.log("ReceiverId:", receiverId);
 
       //Notification code here
 
@@ -114,8 +112,7 @@ class ChatUseCase{
 
     async getMessages (convId:string){
       const messages = await this.MessageRepository.findById(convId);
-      console.log(messages,'conversations from chatuseCase Message')
-      
+     
       if(messages){
         return {
           status: 200,

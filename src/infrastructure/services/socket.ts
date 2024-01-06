@@ -27,11 +27,14 @@ export class SocketManager {
 
   private handleConnection = (socket: Socket): void => {
 
+    //When connect
     socket.on("addUser",(userId:string)=>{
+      console.log('a user connected');
       this.addUser(userId,socket.id)
+      this.io.to(socket.id).emit('welcome',`Hello this from socket ${userId}`);
+      this.io.emit('getUser',this.users);
       console.log(this.users)
     })
-
 
     socket.on("isBlocked", async ({userId}: { userId:string }) => {
       let blockedUser = this.getUser(userId)
@@ -41,17 +44,24 @@ export class SocketManager {
       }
     });
 
-    // socket.on("connection", (connectedSocket) => {
-    //   console.log("Server-Client Connected!", connectedSocket.id);
-    //   connectedSocket.emit('connection', 'connected');
-    // });
+    //Send and get message
+    socket.on('sendMessage',({senderId,receiverId,text}) => {
+      const user:any = this.getUser(receiverId)
+      console.log('user from socket','sender=',senderId,'reciever=',receiverId,'text=',text,'socketId=',user,user?.socketId);
+      this.io.to(user?.socketId).emit('getMessage',{
+        senderId,text
+      })
+    })
 
+
+    //When disconnect
+    socket.on('disconnect',() => {
+      console.log('A user disconnected!');
+      this.removeUser(socket.id)
+      this.io.emit('getUser',this.users);
+
+    })
     
-    
-    // socket.on("disconnect", () => {
-    //   this.removeUser(socket.id);
-    //   console.log("a user disconnected!");
-    // });
   };
 
   private addUser(userId: string, socketId: string): void {
