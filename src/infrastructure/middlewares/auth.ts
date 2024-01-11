@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import {OAuth2Client, TokenPayload} from 'google-auth-library';
-import IGoogleAuthUser from '../../domain/entities/googleAuth';
-import UserRepository from '../repositories/userRepository';
-import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
+import { NextFunction, Request, Response } from "express";
+import { OAuth2Client, TokenPayload } from "google-auth-library";
+import IGoogleAuthUser from "../../domain/entities/googleAuth";
+import UserRepository from "../repositories/userRepository";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -12,17 +12,21 @@ interface AuthenticatedRequest extends Request {
 
 const userRepo = new UserRepository();
 
-declare global{
+declare global {
   namespace Express {
     interface Request {
-      userId? : string;
+      userId?: string;
     }
   }
 }
 
-const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+const auth = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(" ")[1];
     const googleToken = token?.length! > 1000;
 
     if (googleToken) {
@@ -41,37 +45,45 @@ const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction
         email: userPayload?.email!,
         profileImage: userPayload?.picture!,
       };
-      console.log(req.user);
-      console.log("googleAuth successful")
     } else {
       // To do: verify our custom jwt token
-      let token; 
+      let token;
       token = req.cookies.userJWT;
-      console.log('userToken',token);
-      if(token){
-          const decoded = jwt.decode(token) as JwtPayload;
-          // console.log('Decoded User Token',decoded);
-          if(decoded.role==='user'){
-              const user = await userRepo.findById(decoded._id as string);
-            // console.log('User',user)
-            if(user && decoded.role === 'user'){
-              req.userId = user._id;
-              if(user.isBlocked){
-                return res.status(401).json({success:false,result:{success:false,message: "You have been blocked by admin!"}});
-              }else{
-                console.log('NextFunction');
-                next();
-              }
+      if (token) {
+        const decoded = jwt.decode(token) as JwtPayload;
+        if (decoded.role === "user") {
+          const user = await userRepo.findById(decoded._id as string);
+          if (user && decoded.role === "user") {
+            req.userId = user._id;
+            if (user.isBlocked) {
+              return res.status(401).json({
+                success: false,
+                result: {
+                  success: false,
+                  message: "You have been blocked by admin!",
+                },
+              });
+            } else {
+              next();
             }
           }
-          
-      }else{
-        return res.status(401).json({success:false,result:{success:false,message: "Unauthorized Access"}});
+        }
+      } else {
+        return res.status(401).json({
+          success: false,
+          result: { success: false, message: "Unauthorized Access" },
+        });
       }
     }
   } catch (error) {
-    console.log(error);
-    res.status(401).json({ success: false, result:{success:false, message: 'Something went wrong with your authorization' }});
+    console.error(error);
+    res.status(401).json({
+      success: false,
+      result: {
+        success: false,
+        message: "Something went wrong with your authorization",
+      },
+    });
   }
 };
 

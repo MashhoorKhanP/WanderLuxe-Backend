@@ -1,10 +1,10 @@
-import { Request,Response } from "express";
+import { Request, Response } from "express";
 import RoomUseCase from "../../useCases/roomUseCase";
 
 class RoomController {
-  private RoomUseCase:RoomUseCase;
+  private RoomUseCase: RoomUseCase;
 
-  constructor(RoomUseCase:RoomUseCase){
+  constructor(RoomUseCase: RoomUseCase) {
     this.RoomUseCase = RoomUseCase;
   }
   //Admin Side
@@ -56,10 +56,7 @@ class RoomController {
   async updateRoom(req: Request, res: Response) {
     try {
       const roomId = req.params.roomId;
-      const updatedroom = await this.RoomUseCase.updateRoom(
-        roomId,
-        req.body
-      );
+      const updatedroom = await this.RoomUseCase.updateRoom(roomId, req.body);
       res.status(200).json({
         success: true,
         result: { ...updatedroom.data },
@@ -69,7 +66,6 @@ class RoomController {
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
-  
 }
 
 export default RoomController;

@@ -55,17 +55,23 @@ class UserRepository implements UserRepo {
   async findByOneAndUpdateWishlist(
     _id: string,
     hotelId: string,
-    isWishlisted:boolean,
-  ): Promise<IUser|null> {
-    if(isWishlisted===true){
-      await UserModel.findOneAndUpdate({_id},{$pull:{wishlist:hotelId}},{new:true});
+    isWishlisted: boolean
+  ): Promise<IUser | null> {
+    if (isWishlisted === true) {
+      await UserModel.findOneAndUpdate(
+        { _id },
+        { $pull: { wishlist: hotelId } },
+        { new: true }
+      );
       const user = await UserModel.findById({ _id });
-      console.log('Wishlist pulled from userRepository updated')
       return user;
-    }else{
-      await UserModel.findOneAndUpdate({_id},{$push:{wishlist:hotelId}},{new:true});
+    } else {
+      await UserModel.findOneAndUpdate(
+        { _id },
+        { $push: { wishlist: hotelId } },
+        { new: true }
+      );
       const user = await UserModel.findById({ _id });
-      console.log('Wishlist pushed from userRepository updated')
       return user;
     }
   }
@@ -74,25 +80,34 @@ class UserRepository implements UserRepo {
     _id: string,
     newPassword: string
   ): Promise<IUser | null> {
-    const updatedUser = await UserModel.findByIdAndUpdate({_id},{$set:{password:newPassword}} , {
-      new: true,
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      { _id },
+      { $set: { password: newPassword } },
+      {
+        new: true,
+      }
+    );
     return updatedUser;
   }
 
-  async findByIdAndUpdateWallet(_id: string,amount:number,walletHistory:any): Promise<IUser | null> {
-    const updatedUser = await UserModel.findByIdAndUpdate({_id: _id},
+  async findByIdAndUpdateWallet(
+    _id: string,
+    amount: number,
+    walletHistory: any
+  ): Promise<IUser | null> {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      { _id: _id },
       {
-          $inc:{
-              wallet: amount
-          },
-          $push:{
-              walletHistory
-          }
-      })
+        $inc: {
+          wallet: amount,
+        },
+        $push: {
+          walletHistory,
+        },
+      }
+    );
     return updatedUser;
   }
-  
 }
 
 export default UserRepository;

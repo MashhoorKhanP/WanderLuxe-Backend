@@ -30,13 +30,12 @@ const adminAuth = async (
         token,
         process.env.JWT_SECRET as Secret
       ) as JwtPayload;
-      // console.log(decoded);
-      if(decoded.role === 'admin'){
+      if (decoded.role === "admin") {
         const admin = await adminRepo.findByEmail(decoded.email as string);
         if (admin && decoded.role === "admin") {
           next();
         }
-    }
+      }
     } else {
       return res.status(401).json({
         success: false,
@@ -44,7 +43,7 @@ const adminAuth = async (
       });
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(401).json({
       success: false,
       result: {

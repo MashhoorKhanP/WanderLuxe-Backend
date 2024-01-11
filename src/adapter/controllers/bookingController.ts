@@ -10,10 +10,15 @@ class BookingController {
 
   async walletPayment(req: Request, res: Response) {
     try {
-      const transactionId = 'Wallet Payment';
-      const receipt_url = 'Check wallet history';
+      const transactionId = "Wallet Payment";
+      const receipt_url = "Check wallet history";
       const isWalletBalanceUsed = true;
-      const payment= await this.BookingUseCase.bookRoom(req.body,transactionId,receipt_url,isWalletBalanceUsed);
+      const payment = await this.BookingUseCase.bookRoom(
+        req.body,
+        transactionId,
+        receipt_url,
+        isWalletBalanceUsed
+      );
       if (payment) {
         return res.status(payment.status).json({
           success: true,
@@ -31,7 +36,7 @@ class BookingController {
   async payment(req: Request, res: Response) {
     try {
       req.app.locals.booking = req.body;
-      const payment= await this.BookingUseCase.payment(req.body);
+      const payment = await this.BookingUseCase.payment(req.body);
       if (payment) {
         return res.status(payment.status).json({
           success: true,
@@ -49,22 +54,23 @@ class BookingController {
   async webhook(req: Request, res: Response) {
     try {
       const localData = req.app.locals.booking;
-      console.log('localData',localData);
-      console.log('isWalletBalanceUsed,req.app.locals',localData.isWalletBalanceUsed);
-      console.log('req.body of webhook',req.body);
-      
+
       let transactionId;
       let receiptUrl;
-      if(req.body.type === 'charge.succeeded'){
-
+      if (req.body.type === "charge.succeeded") {
         transactionId = req.body.data.object.payment_intent;
         receiptUrl = req.body.data.object.receipt_url;
-  
-        console.log('transactionId', transactionId,'receiptUrl',receiptUrl)
       }
-      const confirmPayment= await this.BookingUseCase.confirmPayment(req as any);
+      const confirmPayment = await this.BookingUseCase.confirmPayment(
+        req as any
+      );
       if (confirmPayment) {
-        const booking = await this.BookingUseCase.bookRoom(localData,transactionId,receiptUrl,localData.isWalletBalanceUsed);
+        const booking = await this.BookingUseCase.bookRoom(
+          localData,
+          transactionId,
+          receiptUrl,
+          localData.isWalletBalanceUsed
+        );
         return res.status(booking.status).json({
           success: true,
           result: { ...booking.data },
@@ -119,7 +125,6 @@ class BookingController {
     }
   }
 
-
   async updateBooking(req: Request, res: Response) {
     try {
       const bookingId = req.params.bookingId;
@@ -136,8 +141,6 @@ class BookingController {
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
-
-  
 }
 
 export default BookingController;

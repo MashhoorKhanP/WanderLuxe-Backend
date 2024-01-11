@@ -2,10 +2,8 @@ import IBooking from "../../domain/entities/booking";
 import BookingRepo from "../../useCases/interfaces/bookingRepo";
 import BookingModel from "../database/bookingModel";
 
-
 class BookingRepository implements BookingRepo {
-  async save(booking: IBooking): Promise<IBooking
-  > {
+  async save(booking: IBooking): Promise<IBooking> {
     console.log("bookingRepository", booking);
     const newBooking = new BookingModel(booking);
     await newBooking.save();
@@ -23,13 +21,16 @@ class BookingRepository implements BookingRepo {
   }
 
   async findBookingsByUserId(userId: string): Promise<IBooking[] | null> {
-      const userBookings = await BookingModel.find({userId:userId}).sort({_id:-1});
-      return userBookings;
+    const userBookings = await BookingModel.find({ userId: userId }).sort({
+      _id: -1,
+    });
+    return userBookings;
   }
-  
 
   async findBookingsByHotelId(hotelId: string): Promise<IBooking[] | null> {
-    const hotelBookings = await BookingModel.find({hotelId:hotelId}).sort({_id:-1});
+    const hotelBookings = await BookingModel.find({ hotelId: hotelId }).sort({
+      _id: -1,
+    });
     return hotelBookings;
   }
 
@@ -43,15 +44,19 @@ class BookingRepository implements BookingRepo {
     return booking;
   }
 
-  async findByIdAndUpdateBookingStatus(transactionId: string, status: string): Promise<IBooking | null> {
-    console.log('transactionId from BookingRepository: ', transactionId);
+  async findByIdAndUpdateBookingStatus(
+    transactionId: string,
+    status: string
+  ): Promise<IBooking | null> {
+    console.log("transactionId from BookingRepository: ", transactionId);
     const booking = await BookingModel.findOneAndUpdate(
-      { transactionId:transactionId }, // Assuming your field is named 'roomId'
+      { transactionId: transactionId }, // Assuming your field is named 'roomId'
       { status: status },
-      { new: true })
+      { new: true }
+    );
     return booking;
   }
-  
+
   // async findAndDeleteHotel(hotelId: string): Promise<string | null> {
   //   const deletedHotel = await HotelModel.findByIdAndDelete(hotelId);
   //   // Check if the hotel was deleted

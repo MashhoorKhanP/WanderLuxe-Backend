@@ -9,14 +9,16 @@ interface IUser {
   isVerified?: boolean;
   isBlocked?: boolean;
   wallet?: number | any;
-  walletHistory?: [{
-    transactionDate:Date,
-    transactionDetails: string
-    transactionType: string
-    transactionAmount: number
-    currentBalance: number
-    transactionId:string
-}],
+  walletHistory?: [
+    {
+      transactionDate: Date;
+      transactionDetails: string;
+      transactionType: string;
+      transactionAmount: number;
+      currentBalance: number;
+      transactionId: string;
+    }
+  ];
   wishlist?: [];
   isGoogle?: boolean;
 }

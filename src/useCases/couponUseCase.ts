@@ -4,8 +4,8 @@ import CouponRepository from "../infrastructure/repositories/couponRepository";
 class CouponUseCase {
   private CouponRepository: CouponRepository;
 
-  constructor(CouponRepository:CouponRepository) {
-    this.CouponRepository =CouponRepository;
+  constructor(CouponRepository: CouponRepository) {
+    this.CouponRepository = CouponRepository;
   }
   //Admin side
   async addCoupon(coupon: ICoupon) {
@@ -31,7 +31,7 @@ class CouponUseCase {
   }
 
   async deleteCoupon(couponId: string) {
-    const _id = await this.CouponRepository.findAndDeleteCoupon(couponId)
+    const _id = await this.CouponRepository.findAndDeleteCoupon(couponId);
     return {
       status: 200,
       data: {

@@ -23,9 +23,8 @@ class CouponRepository implements CouponRepo {
   async findAndDeleteCoupon(couponId: string): Promise<string | null> {
     const deletedCoupon = await CouponModel.findByIdAndDelete(couponId);
     if (deletedCoupon) {
-     
       const { _id } = deletedCoupon;
-      return _id.toString(); 
+      return _id.toString();
     }
     return null;
   }
@@ -46,11 +45,9 @@ class CouponRepository implements CouponRepo {
       { $inc: { couponCount: -1 } }, // Use $inc to decrease couponCount by 1
       { new: true }
     );
-  
+
     return coupon;
   }
-
-  
 }
 
 export default CouponRepository;

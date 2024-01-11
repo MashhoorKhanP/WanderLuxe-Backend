@@ -3,10 +3,10 @@ import BannerRepository from "../infrastructure/repositories/bannerRepository";
 class BannerUseCase {
   private BannerRepository: BannerRepository;
 
-  constructor(BannerRepository:BannerRepository) {
-    this.BannerRepository =BannerRepository;
+  constructor(BannerRepository: BannerRepository) {
+    this.BannerRepository = BannerRepository;
   }
- 
+
   async updateBanners(bannerId: string, reqBody: object) {
     const updatedBanner = await this.BannerRepository.findByIdAndUpdate(
       bannerId,

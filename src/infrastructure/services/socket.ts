@@ -2,20 +2,20 @@ import { Server, Socket } from "socket.io";
 import { Server as HttpServer } from "http";
 import UserRepository from "../repositories/userRepository";
 
-interface User{
-  userId:string;
-  socketId:string;
+interface User {
+  userId: string;
+  socketId: string;
 }
 
 export class SocketManager {
   private httpServer: HttpServer;
   public io: Server;
-  private userRespository: UserRepository
-  private users:User[]=[]
-  
-  constructor(httpServer: HttpServer,userRepository: UserRepository) {
+  private userRespository: UserRepository;
+  private users: User[] = [];
+
+  constructor(httpServer: HttpServer, userRepository: UserRepository) {
     this.httpServer = httpServer;
-    this.userRespository=userRepository
+    this.userRespository = userRepository;
     this.io = new Server(httpServer, {
       cors: {
         origin: process.env.CLIENT_URL,
@@ -26,42 +26,52 @@ export class SocketManager {
   }
 
   private handleConnection = (socket: Socket): void => {
-
     //When connect
-    socket.on("addUser",(userId:string)=>{
-      console.log('a user connected');
-      this.addUser(userId,socket.id)
-      this.io.to(socket.id).emit('welcome',`Hello this from socket ${userId}`);
-      this.io.emit('getUser',this.users);
-      console.log(this.users)
-    })
+    socket.on("addUser", (userId: string) => {
+      console.log("a user connected");
+      this.addUser(userId, socket.id);
+      this.io.to(socket.id).emit("welcome", `Hello this from socket ${userId}`);
+      this.io.emit("getUser", this.users);
+      console.log(this.users);
+    });
 
-    socket.on("isBlocked", async ({userId}: { userId:string }) => {
-      let blockedUser = this.getUser(userId)
-      let user = await this.userRespository.findById(userId)
-      if(user && user._id && blockedUser){
-        this.io.to(blockedUser.socketId).emit("responseIsBlocked", {isBlocked:user.isBlocked});
+    socket.on("isBlocked", async ({ userId }: { userId: string }) => {
+      let blockedUser = this.getUser(userId);
+      let user = await this.userRespository.findById(userId);
+      if (user && user._id && blockedUser) {
+        this.io
+          .to(blockedUser.socketId)
+          .emit("responseIsBlocked", { isBlocked: user.isBlocked });
       }
     });
 
     //Send and get message
-    socket.on('sendMessage',({senderId,receiverId,text}) => {
-      const user:any = this.getUser(receiverId)
-      console.log('user from socket','sender=',senderId,'reciever=',receiverId,'text=',text,'socketId=',user,user?.socketId);
-      this.io.to(user?.socketId).emit('getMessage',{
-        senderId,text
-      })
-    })
-
+    socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+      const user: any = this.getUser(receiverId);
+      // console.log(
+      //   "user from socket",
+      //   "sender=",
+      //   senderId,
+      //   "reciever=",
+      //   receiverId,
+      //   "text=",
+      //   text,
+      //   "socketId=",
+      //   user,
+      //   user?.socketId
+      // );
+      this.io.to(user?.socketId).emit("getMessage", {
+        senderId,
+        text,
+      });
+    });
 
     //When disconnect
-    socket.on('disconnect',() => {
-      console.log('A user disconnected!');
-      this.removeUser(socket.id)
-      this.io.emit('getUser',this.users);
-
-    })
-    
+    socket.on("disconnect", () => {
+      console.log("A user disconnected!");
+      this.removeUser(socket.id);
+      this.io.emit("getUser", this.users);
+    });
   };
 
   private addUser(userId: string, socketId: string): void {
@@ -77,6 +87,4 @@ export class SocketManager {
   private getUser(userId: string): User | undefined {
     return this.users.find((user) => user.userId === userId);
   }
-
-  
 }

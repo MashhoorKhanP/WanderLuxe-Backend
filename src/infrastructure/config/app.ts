@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import http from "http"
+import http from "http";
 import userRoute from "../routes/userRoute";
 import adminRoute from "../routes/adminRoute";
 import path from "path";
@@ -13,7 +13,7 @@ dotenv.config();
 export const createServer = () => {
   try {
     const app = express();
-  
+
     app.use(
       cors({
         origin: process.env.CLIENT_URL || "", // Allow requests from CLIENT_URL
@@ -29,10 +29,10 @@ export const createServer = () => {
     app.use(express.static(path.join(__dirname, "../public")));
     app.use(cookieParser());
 
-    const httpServer = http.createServer(app)
-    const repository = new UserRepository
-    const socket = new SocketManager(httpServer,repository)
-    
+    const httpServer = http.createServer(app);
+    const repository = new UserRepository();
+    const socket = new SocketManager(httpServer, repository);
+
     app.use("/api/user", userRoute);
     app.use("/api/admin", adminRoute);
 
@@ -43,12 +43,8 @@ export const createServer = () => {
 
     // return app;
     return httpServer;
-
-
   } catch (error) {
     const err: Error = error as Error;
     console.log(err.message);
   }
 };
-
-

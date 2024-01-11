@@ -7,7 +7,7 @@ class BannerController {
   constructor(BannerUseCase: BannerUseCase) {
     this.BannerUseCase = BannerUseCase;
   }
-  
+
   async updateBanners(req: Request, res: Response) {
     try {
       const bannerId = req.params.bannerId;

@@ -8,12 +8,12 @@ class JWTToken implements JWT {
     firstName: string,
     lastName: string,
     profileImage: string,
-    role:string
+    role: string
   ): string {
     const KEY = process.env.JWT_SECRET;
     if (KEY) {
       const token = jwt.sign(
-        { _id, email, firstName, lastName, profileImage,role },
+        { _id, email, firstName, lastName, profileImage, role },
         KEY,
         { expiresIn: "4h" }
       );

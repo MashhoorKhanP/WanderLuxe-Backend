@@ -2,15 +2,15 @@ import IRoom from "../domain/entities/room";
 import RoomRepository from "../infrastructure/repositories/roomRepository";
 
 class RoomUseCase {
-  private RoomRepository:RoomRepository;
+  private RoomRepository: RoomRepository;
 
-  constructor(RoomRepository:RoomRepository){
+  constructor(RoomRepository: RoomRepository) {
     this.RoomRepository = RoomRepository;
   }
 
-  async addRoom(room:IRoom) {
-    if(room){
-      await this.RoomRepository.save({...room});
+  async addRoom(room: IRoom) {
+    if (room) {
+      await this.RoomRepository.save({ ...room });
       return {
         status: 200,
         data: {
@@ -76,7 +76,6 @@ class RoomUseCase {
       },
     };
   }
-
 }
 
 export default RoomUseCase;

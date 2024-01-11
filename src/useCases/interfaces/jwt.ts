@@ -5,7 +5,7 @@ interface JWT {
     firstName: string,
     lastName: string,
     profileImage: string,
-    role:string
+    role: string
   ): string;
 }
 export default JWT;

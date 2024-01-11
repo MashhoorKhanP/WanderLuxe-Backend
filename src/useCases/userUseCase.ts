@@ -16,7 +16,7 @@ class UserUserCase {
     UserRepository: UserRepository,
     Encrypt: Encrypt,
     JWTToken: JWTToken,
-    PaymentRepository:PaymentRepository
+    PaymentRepository: PaymentRepository
   ) {
     this.UserRepository = UserRepository;
     this.Encrypt = Encrypt;
@@ -86,7 +86,7 @@ class UserUserCase {
     }
   }
 
-  async signUp(email: string,mobile:string) {
+  async signUp(email: string, mobile: string) {
     const userExists = await this.UserRepository.findByEmail(email);
     const sameMobileExits = await this.UserRepository.findByMobile(mobile);
     if (userExists) {
@@ -98,7 +98,8 @@ class UserUserCase {
           message: "User already exists!",
         },
       };
-    } if (sameMobileExits) {
+    }
+    if (sameMobileExits) {
       return {
         status: 400,
         data: {
@@ -107,7 +108,7 @@ class UserUserCase {
           message: "Mobile Number already exist!",
         },
       };
-    }else {
+    } else {
       // If the user doesn't exist, return success with a verification message
       return {
         status: 200,
@@ -121,12 +122,10 @@ class UserUserCase {
   }
 
   async verifyUser(user: IUser) {
-    console.log("useCase", user);
     var token = "";
     if (user.password) {
       const hashedPassword = await this.Encrypt.generateHash(user.password);
       const newUser = { ...user, password: hashedPassword };
-      console.log("newUser", newUser);
       const role = "user";
       if (user)
         token = this.JWTToken.generateToken(
@@ -137,7 +136,7 @@ class UserUserCase {
           user.profileImage,
           role
         );
-      
+
       await this.UserRepository.save(newUser);
 
       return {
@@ -157,30 +156,29 @@ class UserUserCase {
     }
   }
 
-
-
-  async verifyForgotPasswordUser(user:any,isForgotPassword: string) {
-    console.log('user from verifyuser userUseCase',user.email);
-    
-      const userData:any = await this.verifyForgotPassword(user.email,user.newPassword);
-        if(userData){
-          return {
-          status: 200,
-          data: {
-            status: true,
-            success: true,
-            message: userData,
-          },
-        }
-      }else{
-        return {
-          status: 400,
-          data: {
-            success: false,
-            message: "User not found, Something went wrong",
-          },
-        };
-      }
+  async verifyForgotPasswordUser(user: any, isForgotPassword: string) {
+    const userData: any = await this.verifyForgotPassword(
+      user.email,
+      user.newPassword
+    );
+    if (userData) {
+      return {
+        status: 200,
+        data: {
+          status: true,
+          success: true,
+          message: userData,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          success: false,
+          message: "User not found, Something went wrong",
+        },
+      };
+    }
   }
 
   async login(user: IUser) {
@@ -215,20 +213,19 @@ class UserUserCase {
             role
           );
         const safedUserData = {
-          _id:userData._id,
-          firstName:userData.firstName,
-          lastName:userData.lastName,
-          email:userData.email,
-          profileImage:userData.profileImage,
-          isVerified:userData.isVerified,
-          isBlocked:userData.isBlocked,
-          isGoogle:userData.isGoogle,
-          wishlist:userData.wishlist,
-          wallet:userData.wallet,
-          mobile:userData.mobile,
-          walletHistory:userData.walletHistory
-
-        }
+          _id: userData._id,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          profileImage: userData.profileImage,
+          isVerified: userData.isVerified,
+          isBlocked: userData.isBlocked,
+          isGoogle: userData.isGoogle,
+          wishlist: userData.wishlist,
+          wallet: userData.wallet,
+          mobile: userData.mobile,
+          walletHistory: userData.walletHistory,
+        };
         return {
           status: 200,
           data: {
@@ -266,25 +263,24 @@ class UserUserCase {
     );
     if (updatedUser) {
       const safedUserData = {
-        _id:updatedUser._id,
-        firstName:updatedUser.firstName,
-        lastName:updatedUser.lastName,
-        email:updatedUser.email,
-        profileImage:updatedUser.profileImage,
-        isVerified:updatedUser.isVerified,
-        isBlocked:updatedUser.isBlocked,
-        isGoogle:updatedUser.isGoogle,
-        wishlist:updatedUser.wishlist,
-        wallet:updatedUser.wallet,
-        mobile:updatedUser.mobile,
-        walletHistory:updatedUser.walletHistory
-
-      }
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        profileImage: updatedUser.profileImage,
+        isVerified: updatedUser.isVerified,
+        isBlocked: updatedUser.isBlocked,
+        isGoogle: updatedUser.isGoogle,
+        wishlist: updatedUser.wishlist,
+        wallet: updatedUser.wallet,
+        mobile: updatedUser.mobile,
+        walletHistory: updatedUser.walletHistory,
+      };
       return {
         status: 200,
         data: {
           success: true,
-          message:safedUserData,
+          message: safedUserData,
         },
       };
     } else {
@@ -298,32 +294,37 @@ class UserUserCase {
     }
   }
 
-  async addRemoveFromWishlist(hotelId: string, userId:string) {
+  async addRemoveFromWishlist(hotelId: string, userId: string) {
     //Continue find user then update wishlist as nonstop fashion
-    const user:any= await this.UserRepository.findById(userId);
+    const user: any = await this.UserRepository.findById(userId);
     const hotelObjectId = new mongoose.Types.ObjectId(hotelId);
-    const hotelExist = user.wishlist.some((data:any) => data.equals(hotelObjectId));
+    const hotelExist = user.wishlist.some((data: any) =>
+      data.equals(hotelObjectId)
+    );
     let isWishlisted = false;
-    if(hotelExist){
-      isWishlisted =true;
-      const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(userId,hotelId,isWishlisted);
+    if (hotelExist) {
+      isWishlisted = true;
+      const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(
+        userId,
+        hotelId,
+        isWishlisted
+      );
       let safedUserData;
-      if(resultUser){
-      safedUserData = {
-        _id:resultUser._id,
-        firstName:resultUser.firstName,
-        lastName:resultUser.lastName,
-        email:resultUser.email,
-        profileImage:resultUser.profileImage,
-        isVerified:resultUser.isVerified,
-        isBlocked:resultUser.isBlocked,
-        isGoogle:resultUser.isGoogle,
-        wishlist:resultUser.wishlist,
-        wallet:resultUser.wallet,
-        mobile:resultUser.mobile,
-        walletHistory:resultUser.walletHistory
-
-        }
+      if (resultUser) {
+        safedUserData = {
+          _id: resultUser._id,
+          firstName: resultUser.firstName,
+          lastName: resultUser.lastName,
+          email: resultUser.email,
+          profileImage: resultUser.profileImage,
+          isVerified: resultUser.isVerified,
+          isBlocked: resultUser.isBlocked,
+          isGoogle: resultUser.isGoogle,
+          wishlist: resultUser.wishlist,
+          wallet: resultUser.wallet,
+          mobile: resultUser.mobile,
+          walletHistory: resultUser.walletHistory,
+        };
       }
       return {
         status: 200,
@@ -332,25 +333,28 @@ class UserUserCase {
           message: safedUserData,
         },
       };
-    }else if(!hotelExist){
-      const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(userId,hotelId,isWishlisted=false);
+    } else if (!hotelExist) {
+      const resultUser = await this.UserRepository.findByOneAndUpdateWishlist(
+        userId,
+        hotelId,
+        (isWishlisted = false)
+      );
       let safedUserData;
-      if(resultUser){
-      safedUserData = {
-        _id:resultUser._id,
-        firstName:resultUser.firstName,
-        lastName:resultUser.lastName,
-        email:resultUser.email,
-        profileImage:resultUser.profileImage,
-        isVerified:resultUser.isVerified,
-        isBlocked:resultUser.isBlocked,
-        isGoogle:resultUser.isGoogle,
-        wishlist:resultUser.wishlist,
-        wallet:resultUser.wallet,
-        mobile:resultUser.mobile,
-        walletHistory:resultUser.walletHistory
-
-        }
+      if (resultUser) {
+        safedUserData = {
+          _id: resultUser._id,
+          firstName: resultUser.firstName,
+          lastName: resultUser.lastName,
+          email: resultUser.email,
+          profileImage: resultUser.profileImage,
+          isVerified: resultUser.isVerified,
+          isBlocked: resultUser.isBlocked,
+          isGoogle: resultUser.isGoogle,
+          wishlist: resultUser.wishlist,
+          wallet: resultUser.wallet,
+          mobile: resultUser.mobile,
+          walletHistory: resultUser.walletHistory,
+        };
       }
       return {
         status: 200,
@@ -359,7 +363,7 @@ class UserUserCase {
           message: safedUserData,
         },
       };
-    }else {
+    } else {
       return {
         status: 400,
         data: {
@@ -370,30 +374,38 @@ class UserUserCase {
     }
   }
 
-  async updatePassword(userId:string,currentPassword: string,newPassword: string) {
-    
-    const user:any= await this.UserRepository.findById(userId);
-    const passwordMatch = await this.Encrypt.compare(currentPassword,user.password);
-    if(passwordMatch){
+  async updatePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ) {
+    const user: any = await this.UserRepository.findById(userId);
+    const passwordMatch = await this.Encrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (passwordMatch) {
       const newHashedPassword = await this.Encrypt.generateHash(newPassword);
-      const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(userId,newHashedPassword);
+      const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(
+        userId,
+        newHashedPassword
+      );
       let safedUserData;
-      if(updatedUser){
-      safedUserData = {
-        _id:updatedUser._id,
-        firstName:updatedUser.firstName,
-        lastName:updatedUser.lastName,
-        email:updatedUser.email,
-        profileImage:updatedUser.profileImage,
-        isVerified:updatedUser.isVerified,
-        isBlocked:updatedUser.isBlocked,
-        isGoogle:updatedUser.isGoogle,
-        wishlist:updatedUser.wishlist,
-        wallet:updatedUser.wallet,
-        mobile:updatedUser.mobile,
-        walletHistory:updatedUser.walletHistory
-
-        }
+      if (updatedUser) {
+        safedUserData = {
+          _id: updatedUser._id,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          profileImage: updatedUser.profileImage,
+          isVerified: updatedUser.isVerified,
+          isBlocked: updatedUser.isBlocked,
+          isGoogle: updatedUser.isGoogle,
+          wishlist: updatedUser.wishlist,
+          wallet: updatedUser.wallet,
+          mobile: updatedUser.mobile,
+          walletHistory: updatedUser.walletHistory,
+        };
       }
       return {
         status: 200,
@@ -402,7 +414,7 @@ class UserUserCase {
           message: safedUserData,
         },
       };
-    }else {
+    } else {
       return {
         status: 400,
         data: {
@@ -413,11 +425,10 @@ class UserUserCase {
     }
   }
 
-  async forgotPassword(email:string, newPassword:string){
+  async forgotPassword(email: string, newPassword: string) {
     const userExists = await this.UserRepository.findByEmail(email);
 
     if (userExists) {
-      
       return {
         status: 200,
         data: {
@@ -439,45 +450,48 @@ class UserUserCase {
     }
   }
 
-  async verifyForgotPassword(email:string,newPassword: string) {
-    
-    const user:any= await this.UserRepository.findByEmail(email);
-   
-      const newHashedPassword = await this.Encrypt.generateHash(newPassword);
-      const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(user._id,newHashedPassword);
-      console.log('updatedUser',updatedUser);
-      let safedUserData;
-      if(updatedUser){
-      safedUserData = {
-        _id:updatedUser._id,
-        firstName:updatedUser.firstName,
-        lastName:updatedUser.lastName,
-        email:updatedUser.email,
-        profileImage:updatedUser.profileImage,
-        isVerified:updatedUser.isVerified,
-        isBlocked:updatedUser.isBlocked,
-        isGoogle:updatedUser.isGoogle,
-        wishlist:updatedUser.wishlist,
-        wallet:updatedUser.wallet,
-        mobile:updatedUser.mobile,
-        walletHistory:updatedUser.walletHistory
+  async verifyForgotPassword(email: string, newPassword: string) {
+    const user: any = await this.UserRepository.findByEmail(email);
 
-        }
-      
+    const newHashedPassword = await this.Encrypt.generateHash(newPassword);
+    const updatedUser = await this.UserRepository.findByIdAndUpdatePassword(
+      user._id,
+      newHashedPassword
+    );
+    let safedUserData;
+    if (updatedUser) {
+      safedUserData = {
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        profileImage: updatedUser.profileImage,
+        isVerified: updatedUser.isVerified,
+        isBlocked: updatedUser.isBlocked,
+        isGoogle: updatedUser.isGoogle,
+        wishlist: updatedUser.wishlist,
+        wallet: updatedUser.wallet,
+        mobile: updatedUser.mobile,
+        walletHistory: updatedUser.walletHistory,
+      };
+
       return safedUserData;
-    }else {
+    } else {
       return;
     }
   }
 
-  async addMoneyToWallet(addMoneyToWallet:any) {
+  async addMoneyToWallet(addMoneyToWallet: any) {
     if (addMoneyToWallet) {
-      const paymentData = await this.PaymentRepository.confirmAddMoneyToWalletPayment(addMoneyToWallet)
+      const paymentData =
+        await this.PaymentRepository.confirmAddMoneyToWalletPayment(
+          addMoneyToWallet
+        );
       return {
         status: 200,
         data: {
           success: true,
-          message:paymentData,
+          message: paymentData,
         },
       };
     } else {
@@ -492,52 +506,56 @@ class UserUserCase {
     }
   }
 
-  async confirmWalletPayment(request:any) {
-    const paymentSuccess = await this.PaymentRepository.addMoneyToWalletPaymentSuccess(request)
-    console.log('reached confirmPayment UseCase',paymentSuccess);
-    if(!paymentSuccess){
+  async confirmWalletPayment(request: any) {
+    const paymentSuccess =
+      await this.PaymentRepository.addMoneyToWalletPaymentSuccess(request);
+    if (!paymentSuccess) {
       console.log("Payment faileddddd");
       return null;
-    }else{
+    } else {
       return true;
     }
   }
 
-  async addMoney(addMoneyToWalletDetails:any,transactionId:string){
-    console.log('addMoneyToWalletDetails',addMoneyToWalletDetails)
-    console.log('transactionId',transactionId)
-    const user=await this.UserRepository.findById(addMoneyToWalletDetails.userId);
-    
+  async addMoney(addMoneyToWalletDetails: any, transactionId: string) {
+    const user = await this.UserRepository.findById(
+      addMoneyToWalletDetails.userId
+    );
+
     const walletHistory = {
       transactionDate: new Date(),
-      transactionDetails: 'Deposited via Stripe',
-      transactionType: 'Credit',
-      transactionId:transactionId,
-      transactionAmount:addMoneyToWalletDetails.amount,
-      currentBalance: user?.wallet + addMoneyToWalletDetails.amount
-  }
-    const updatedUser =await this.UserRepository.findByIdAndUpdateWallet(addMoneyToWalletDetails.userId,addMoneyToWalletDetails.amount,walletHistory);
-    
+      transactionDetails: "Deposited via Stripe",
+      transactionType: "Credit",
+      transactionId: transactionId,
+      transactionAmount: addMoneyToWalletDetails.amount,
+      currentBalance: user?.wallet + addMoneyToWalletDetails.amount,
+    };
+    const updatedUser = await this.UserRepository.findByIdAndUpdateWallet(
+      addMoneyToWalletDetails.userId,
+      addMoneyToWalletDetails.amount,
+      walletHistory
+    );
+
     const safedUserData = {
-      _id:updatedUser?._id,
-        firstName:updatedUser?.firstName,
-        lastName:updatedUser?.lastName,
-        email:updatedUser?.email,
-        profileImage:updatedUser?.profileImage,
-        isVerified:updatedUser?.isVerified,
-        isBlocked:updatedUser?.isBlocked,
-        isGoogle:updatedUser?.isGoogle,
-        wishlist:updatedUser?.wishlist,
-        wallet:updatedUser?.wallet,
-        mobile:updatedUser?.mobile,
-        walletHistory:updatedUser?.walletHistory
-    }
-    if(updatedUser){
+      _id: updatedUser?._id,
+      firstName: updatedUser?.firstName,
+      lastName: updatedUser?.lastName,
+      email: updatedUser?.email,
+      profileImage: updatedUser?.profileImage,
+      isVerified: updatedUser?.isVerified,
+      isBlocked: updatedUser?.isBlocked,
+      isGoogle: updatedUser?.isGoogle,
+      wishlist: updatedUser?.wishlist,
+      wallet: updatedUser?.wallet,
+      mobile: updatedUser?.mobile,
+      walletHistory: updatedUser?.walletHistory,
+    };
+    if (updatedUser) {
       return {
         status: 200,
         data: {
           success: true,
-          message:safedUserData,
+          message: safedUserData,
         },
       };
     } else {
@@ -553,30 +571,27 @@ class UserUserCase {
   }
 
   async getUpdatedUser(id: string) {
-    const updatedUser = await this.UserRepository.findById(
-      id
-    );
+    const updatedUser = await this.UserRepository.findById(id);
     if (updatedUser) {
       const safedUserData = {
-        _id:updatedUser._id,
-        firstName:updatedUser.firstName,
-        lastName:updatedUser.lastName,
-        email:updatedUser.email,
-        profileImage:updatedUser.profileImage,
-        isVerified:updatedUser.isVerified,
-        isBlocked:updatedUser.isBlocked,
-        isGoogle:updatedUser.isGoogle,
-        wishlist:updatedUser.wishlist,
-        wallet:updatedUser.wallet,
-        mobile:updatedUser.mobile,
-        walletHistory:updatedUser.walletHistory
-
-      }
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        profileImage: updatedUser.profileImage,
+        isVerified: updatedUser.isVerified,
+        isBlocked: updatedUser.isBlocked,
+        isGoogle: updatedUser.isGoogle,
+        wishlist: updatedUser.wishlist,
+        wallet: updatedUser.wallet,
+        mobile: updatedUser.mobile,
+        walletHistory: updatedUser.walletHistory,
+      };
       return {
         status: 200,
         data: {
           success: true,
-          message:safedUserData,
+          message: safedUserData,
         },
       };
     } else {

@@ -13,33 +13,37 @@ const userSchema: Schema = new Schema<IUser & Document>(
     isBlocked: { type: Boolean, default: false },
     isGoogle: { type: Boolean, default: false },
     walletHistory: {
-      type: [{
-        transactionDate: {
-          type: Date,
+      type: [
+        {
+          transactionDate: {
+            type: Date,
+          },
+          transactionDetails: {
+            type: String,
+          },
+          transactionType: {
+            type: String,
+          },
+          transactionAmount: {
+            type: Number,
+          },
+          currentBalance: {
+            type: Number,
+          },
+          transactionId: {
+            type: String,
+          },
         },
-        transactionDetails: {
-          type: String,
-        },
-        transactionType: {
-          type: String,
-        },
-        transactionAmount: {
-          type: Number,
-        },
-        currentBalance: {
-          type: Number,
-        },
-        transactionId: {
-          type: String,
-        },
-      }],
+      ],
       default: [],
     },
 
-    wishlist: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Hotel'
-    }],
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Hotel",
+      },
+    ],
     wallet: { type: Number, default: 0 },
   },
   {

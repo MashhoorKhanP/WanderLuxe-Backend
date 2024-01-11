@@ -4,8 +4,8 @@ import ChatUseCase from "../../useCases/chatUseCase";
 
 class AdminController {
   private adminUseCase: AdminUseCase;
-  private chatUseCase : ChatUseCase;
-  constructor(adminUseCase: AdminUseCase,chatUseCase:ChatUseCase) {
+  private chatUseCase: ChatUseCase;
+  constructor(adminUseCase: AdminUseCase, chatUseCase: ChatUseCase) {
     this.adminUseCase = adminUseCase;
     this.chatUseCase = chatUseCase;
   }
@@ -63,29 +63,29 @@ class AdminController {
     }
   }
 
-  async newConversation(req:Request,res:Response){
+  async newConversation(req: Request, res: Response) {
     try {
-     const members:any = [req.body.senderId,req.body.receiverId]
-     const existing = await this.chatUseCase.checkExisting(members);
-     if (!existing?.length) {
-      console.log("entered");
-      const conversation = await this.chatUseCase.newConversation(members)
-      res.status(200).json({
-        success: true,
-        result: { ...conversation.data },
-      });
-     }
+      const members: any = [req.body.senderId, req.body.receiverId];
+      const existing = await this.chatUseCase.checkExisting(members);
+      if (!existing?.length) {
+        const conversation = await this.chatUseCase.newConversation(members);
+        res.status(200).json({
+          success: true,
+          result: { ...conversation.data },
+        });
+      }
     } catch (error) {
       const typedError = error as Error;
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
 
-  async getConversations(req:Request,res:Response){
+  async getConversations(req: Request, res: Response) {
     try {
-     console.log('conversationId',req.params.conversationId);
-     const conversations = await this.chatUseCase.getConversations(req.params.conversationId)
-     
+      const conversations = await this.chatUseCase.getConversations(
+        req.params.conversationId
+      );
+
       res.status(200).json({
         success: true,
         result: { ...conversations.data },
@@ -96,11 +96,10 @@ class AdminController {
     }
   }
 
-  async addMessage(req:Request,res:Response){
+  async addMessage(req: Request, res: Response) {
     try {
-     console.log('addmessageReq.body',req.body);
-     const messages = await this.chatUseCase.addMessage({...req.body})
-    
+      const messages = await this.chatUseCase.addMessage({ ...req.body });
+
       res.status(200).json({
         success: true,
         result: { ...messages.data },
@@ -111,11 +110,12 @@ class AdminController {
     }
   }
 
-  async getMessages(req:Request,res:Response){
+  async getMessages(req: Request, res: Response) {
     try {
-     console.log('addmessageReq.body',req.params.conversationId);
-     const messages = await this.chatUseCase.getMessages(req.params.conversationId)
-    
+      const messages = await this.chatUseCase.getMessages(
+        req.params.conversationId
+      );
+
       res.status(200).json({
         success: true,
         result: { ...messages.data },
@@ -125,8 +125,6 @@ class AdminController {
       res.status(400).json({ success: false, error: typedError.message });
     }
   }
-
-  
 }
 
 export default AdminController;
