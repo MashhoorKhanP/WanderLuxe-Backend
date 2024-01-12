@@ -27,6 +27,7 @@ const adminAuth = async (
     
     if (token) {
       const decoded = jwt.decode(token) as JwtPayload;
+      console.log('decodedAdmintoken',decoded);
       if (decoded.role === "admin") {
         const admin = await adminRepo.findByEmail(decoded.email as string);
         if (admin && decoded.role === "admin") {
