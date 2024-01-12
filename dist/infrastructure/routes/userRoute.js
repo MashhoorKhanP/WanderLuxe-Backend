@@ -82,8 +82,8 @@ router.patch("/add-remove/wishlist", auth_1.default, (req, res) => userControlle
 router.patch("/change-password", auth_1.default, (req, res) => userController.updatePassword(req, res));
 router.post("/forgot-password", (req, res) => userController.forgotPassword(req, res));
 //payment
-router.post("/wallet-payment", auth_1.default, (req, res) => bookingController.walletPayment(req, res));
-router.post("/payment", auth_1.default, (req, res) => bookingController.payment(req, res));
+router.post("/wallet-payment", (req, res) => bookingController.walletPayment(req, res));
+router.post("/payment", (req, res) => bookingController.payment(req, res));
 router.post("/webhook", (req, res) => bookingController.webhook(req, res));
 router.post("/add-money-to-wallet", (req, res) => userController.addMoneyToWallet(req, res));
 router.post("/wallet/webhook", (req, res) => userController.walletWebhook(req, res));

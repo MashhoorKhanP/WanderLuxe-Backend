@@ -135,10 +135,10 @@ router.post("/forgot-password", (req, res) =>
 );
 
 //payment
-router.post("/wallet-payment", auth, (req, res) =>
+router.post("/wallet-payment", (req, res) =>
   bookingController.walletPayment(req, res)
 );
-router.post("/payment", auth, (req, res) =>
+router.post("/payment", (req, res) =>
   bookingController.payment(req, res)
 );
 router.post("/webhook", (req, res) => bookingController.webhook(req, res));
