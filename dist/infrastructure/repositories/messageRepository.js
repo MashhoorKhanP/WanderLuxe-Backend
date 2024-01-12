@@ -12,24 +12,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bcrypt_1 = __importDefault(require("bcrypt"));
-class Encrypt {
-    generateHash(password) {
+const messageModel_1 = __importDefault(require("../database/messageModel"));
+class MessageRepository {
+    save(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!password) {
-                throw new Error("Invalid password");
-            }
-            const saltRounds = 10;
-            const salt = yield bcrypt_1.default.genSalt(saltRounds);
-            const hashedPassword = yield bcrypt_1.default.hash(password, salt);
-            return hashedPassword;
+            const message = new messageModel_1.default(data);
+            const save = yield message.save();
+            return save;
         });
     }
-    compare(password, hashedPassword) {
+    findById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const match = yield bcrypt_1.default.compare(password, hashedPassword);
-            return match;
+            const messages = yield messageModel_1.default.find({ conversationId: id });
+            return messages;
+        });
+    }
+    getLastMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const lastMessages = yield messageModel_1.default.aggregate([
+                {
+                    $sort: { createdAt: -1 },
+                },
+                {
+                    $group: {
+                        _id: "$conversationId",
+                        lastMessage: { $first: "$$ROOT" },
+                    },
+                },
+                {
+                    $replaceRoot: { newRoot: "$lastMessage" },
+                },
+            ]);
+            return lastMessages;
         });
     }
 }
-exports.default = Encrypt;
+exports.default = MessageRepository;

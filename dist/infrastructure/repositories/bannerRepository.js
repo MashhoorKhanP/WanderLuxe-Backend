@@ -12,24 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bcrypt_1 = __importDefault(require("bcrypt"));
-class Encrypt {
-    generateHash(password) {
+const bannerModel_1 = __importDefault(require("../database/bannerModel"));
+class BannerRepository {
+    findByIdAndUpdate(_id, reqBody) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!password) {
-                throw new Error("Invalid password");
-            }
-            const saltRounds = 10;
-            const salt = yield bcrypt_1.default.genSalt(saltRounds);
-            const hashedPassword = yield bcrypt_1.default.hash(password, salt);
-            return hashedPassword;
+            const banner = yield bannerModel_1.default.findByIdAndUpdate(_id, reqBody, {
+                new: true,
+            });
+            return banner;
         });
     }
-    compare(password, hashedPassword) {
+    findAllBanners() {
         return __awaiter(this, void 0, void 0, function* () {
-            const match = yield bcrypt_1.default.compare(password, hashedPassword);
-            return match;
+            const banners = yield bannerModel_1.default.find({});
+            return banners;
         });
     }
 }
-exports.default = Encrypt;
+exports.default = BannerRepository;

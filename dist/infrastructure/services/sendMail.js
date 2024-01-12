@@ -34,14 +34,14 @@ class GenerateEmail {
             requireTLS: true,
             auth: {
                 user: process.env.EMAIL,
-                pass: process.env.PASSKEY
-            }
+                pass: process.env.PASSKEY,
+            },
         });
         let details = {
             from: process.env.EMAIL,
             to: email,
             subject: "One-Time Password (WanderLuxe)",
-            html: mailData
+            html: mailData,
         };
         mailTransporter.sendMail(details, (error) => {
             console.log("Mail sent successfully");

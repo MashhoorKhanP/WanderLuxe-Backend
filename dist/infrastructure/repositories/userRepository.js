@@ -27,6 +27,12 @@ class UserRepository {
             return user;
         });
     }
+    findByMobile(mobile) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield userModel_1.default.findOne({ mobile });
+            return user;
+        });
+    }
     findById(_id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield userModel_1.default.findById({ _id });
@@ -35,8 +41,57 @@ class UserRepository {
     }
     findAllUsers() {
         return __awaiter(this, void 0, void 0, function* () {
-            const users = yield userModel_1.default.find({}).select('-password');
+            const users = yield userModel_1.default.find({}).select("-password");
             return users;
+        });
+    }
+    findByIdAndUpdate(_id, isVerified, isBlocked) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield userModel_1.default.findByIdAndUpdate(_id, { isVerified, isBlocked }, { new: true });
+            return user;
+        });
+    }
+    findByIdAndUpdateProfile(_id, reqBody) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedUser = yield userModel_1.default.findByIdAndUpdate(_id, reqBody, {
+                new: true,
+            });
+            return updatedUser;
+        });
+    }
+    findByOneAndUpdateWishlist(_id, hotelId, isWishlisted) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (isWishlisted === true) {
+                yield userModel_1.default.findOneAndUpdate({ _id }, { $pull: { wishlist: hotelId } }, { new: true });
+                const user = yield userModel_1.default.findById({ _id });
+                return user;
+            }
+            else {
+                yield userModel_1.default.findOneAndUpdate({ _id }, { $push: { wishlist: hotelId } }, { new: true });
+                const user = yield userModel_1.default.findById({ _id });
+                return user;
+            }
+        });
+    }
+    findByIdAndUpdatePassword(_id, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedUser = yield userModel_1.default.findByIdAndUpdate({ _id }, { $set: { password: newPassword } }, {
+                new: true,
+            });
+            return updatedUser;
+        });
+    }
+    findByIdAndUpdateWallet(_id, amount, walletHistory) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedUser = yield userModel_1.default.findByIdAndUpdate({ _id: _id }, {
+                $inc: {
+                    wallet: amount,
+                },
+                $push: {
+                    walletHistory,
+                },
+            });
+            return updatedUser;
         });
     }
 }

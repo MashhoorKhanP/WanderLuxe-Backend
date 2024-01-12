@@ -12,24 +12,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bcrypt_1 = __importDefault(require("bcrypt"));
-class Encrypt {
-    generateHash(password) {
+const conversationModel_1 = __importDefault(require("../database/conversationModel"));
+class ConversationRepository {
+    save(membersArray) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!password) {
-                throw new Error("Invalid password");
-            }
-            const saltRounds = 10;
-            const salt = yield bcrypt_1.default.genSalt(saltRounds);
-            const hashedPassword = yield bcrypt_1.default.hash(password, salt);
-            return hashedPassword;
+            const newConversation = new conversationModel_1.default({ members: membersArray });
+            const save = yield newConversation.save();
+            return save;
         });
     }
-    compare(password, hashedPassword) {
+    findByUserId(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const match = yield bcrypt_1.default.compare(password, hashedPassword);
-            return match;
+            const conversations = yield conversationModel_1.default.find({
+                members: { $in: [_id] },
+            });
+            return conversations;
+        });
+    }
+    findExisting(members) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const conversations = yield conversationModel_1.default.find({
+                members: { $all: [members[0], members[1]] },
+            });
+            return conversations;
         });
     }
 }
-exports.default = Encrypt;
+exports.default = ConversationRepository;
