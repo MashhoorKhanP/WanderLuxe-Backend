@@ -17,12 +17,13 @@ export const createServer = () => {
     app.use(
       cors({
         origin: process.env.CLIENT_URL, // Allow requests from CLIENT_URL
-        methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+        // methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+        // allowedHeaders: "X-Requested-With, Content-Type, Authorization",
         credentials: true,
       })
     );
     app.options("*", cors());
-    
+
     app.use(express.json({ limit: "10mb" }));
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static(path.join(__dirname, "../public")));
