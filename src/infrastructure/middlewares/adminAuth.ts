@@ -24,7 +24,7 @@ const adminAuth = async (
 ) => {
   try {
     let token = req.cookies.adminJWT;
-
+    
     if (token) {
       const decoded = jwt.decode(token) as JwtPayload;
       if (decoded.role === "admin") {
