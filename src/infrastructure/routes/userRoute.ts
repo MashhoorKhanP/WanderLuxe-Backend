@@ -2,7 +2,6 @@ import express from "express";
 
 import Encrypt from "../services/bcryptPassword";
 import JWTToken from "../services/generateToken";
-
 import UserRepository from "../repositories/userRepository";
 import UserUserCase from "../../useCases/userUseCase";
 import UserController from "../../adapter/controllers/userController";
