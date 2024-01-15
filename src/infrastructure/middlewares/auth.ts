@@ -49,6 +49,7 @@ const auth = async (
       // To do: verify our custom jwt token
       let token;
       token = req.cookies.userJWT;
+      console.log("tokeen",token);
       if (token) {
         const decoded = jwt.decode(token) as JwtPayload;
         if (decoded.role === "user") {

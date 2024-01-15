@@ -39,6 +39,7 @@ const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () 
         // To do: verify our custom jwt token
         let token;
         token = req.cookies.userJWT;
+        console.log("tokeen", token);
         if (token) {
             const decoded = jsonwebtoken_1.default.decode(token);
             if (decoded.role === "user") {
