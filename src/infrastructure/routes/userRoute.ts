@@ -118,11 +118,11 @@ router.get("/my-bookings/:userId", (req, res) =>
 router.get("/hotel-bookings/:hotelId", (req, res) =>
   bookingController.getHotelBookings(req, res)
 );
-router.patch("/my-bookings/cancel-booking/:bookingId", auth, (req, res) =>
+router.patch("/my-bookings/cancel-booking/:bookingId", (req, res) =>
   bookingController.updateBooking(req, res)
 );
 
-router.patch("/add-remove/wishlist", auth, (req, res) =>
+router.patch("/add-remove/wishlist", (req, res) =>
   userController.addRemoveFromWishlist(req, res)
 );
 
