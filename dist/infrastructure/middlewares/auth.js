@@ -18,57 +18,55 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const userRepo = new userRepository_1.default();
 const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-        const googleToken = (token === null || token === void 0 ? void 0 : token.length) > 1000;
-        if (googleToken) {
-            const ticket = yield client.verifyIdToken({
-                idToken: token,
-                audience: process.env.GOOGLE_CLIENT_ID,
-            });
-            const payload = ticket.getPayload();
-            const userPayload = payload;
-            req.user = {
-                _id: userPayload === null || userPayload === void 0 ? void 0 : userPayload.sub,
-                firstName: userPayload === null || userPayload === void 0 ? void 0 : userPayload.given_name,
-                lastName: userPayload === null || userPayload === void 0 ? void 0 : userPayload.family_name,
-                email: userPayload === null || userPayload === void 0 ? void 0 : userPayload.email,
-                profileImage: userPayload === null || userPayload === void 0 ? void 0 : userPayload.picture,
-            };
-        }
-        else {
-            // To do: verify our custom jwt token
-            let token;
-            token = req.cookies.userJWT;
-            if (token) {
-                const decoded = jsonwebtoken_1.default.decode(token);
-                if (decoded.role === "user") {
-                    const user = yield userRepo.findById(decoded._id);
-                    if (user && decoded.role === "user") {
-                        req.userId = user._id;
-                        if (user.isBlocked) {
-                            return res.status(401).json({
+        // const token = req.headers.authorization?.split(" ")[1];
+        // const googleToken = token?.length! > 1000;
+        // if (googleToken) {
+        //   const ticket = await client.verifyIdToken({
+        //     idToken: token!,
+        //     audience: process.env.GOOGLE_CLIENT_ID!,
+        //   });
+        //   const payload = ticket.getPayload();
+        //   const userPayload: TokenPayload = payload as TokenPayload;
+        //   req.user = {
+        //     _id: userPayload?.sub!,
+        //     firstName: userPayload?.given_name!,
+        //     lastName: userPayload?.family_name!,
+        //     email: userPayload?.email!,
+        //     profileImage: userPayload?.picture!,
+        //   };
+        // } else {
+        // To do: verify our custom jwt token
+        let token;
+        token = req.cookies.userJWT;
+        if (token) {
+            const decoded = jsonwebtoken_1.default.decode(token);
+            if (decoded.role === "user") {
+                const user = yield userRepo.findById(decoded._id);
+                if (user && decoded.role === "user") {
+                    req.userId = user._id;
+                    if (user.isBlocked) {
+                        return res.status(401).json({
+                            success: false,
+                            result: {
                                 success: false,
-                                result: {
-                                    success: false,
-                                    message: "You have been blocked by admin!",
-                                },
-                            });
-                        }
-                        else {
-                            next();
-                        }
+                                message: "You have been blocked by admin!",
+                            },
+                        });
+                    }
+                    else {
+                        next();
                     }
                 }
             }
-            else {
-                return res.status(401).json({
-                    success: false,
-                    result: { success: false, message: "Unauthorized Access" },
-                });
-            }
         }
+        else {
+            return res.status(401).json({
+                success: false,
+                result: { success: false, message: "Unauthorized Access" },
+            });
+        }
+        // }
     }
     catch (error) {
         console.error(error);
