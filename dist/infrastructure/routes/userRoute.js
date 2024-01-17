@@ -78,7 +78,7 @@ router.get("/find-bookings", (req, res) => bookingController.getBookings(req, re
 router.get("/my-bookings/:userId", (req, res) => bookingController.getUserBookings(req, res));
 router.get("/hotel-bookings/:hotelId", (req, res) => bookingController.getHotelBookings(req, res));
 router.patch("/my-bookings/cancel-booking/:bookingId", (req, res) => bookingController.updateBooking(req, res));
-router.patch("/add-remove/wishlist", auth_1.default, (req, res) => userController.addRemoveFromWishlist(req, res));
+router.patch("/add-remove/wishlist", (req, res) => userController.addRemoveFromWishlist(req, res));
 router.patch("/change-password", auth_1.default, (req, res) => userController.updatePassword(req, res));
 router.post("/forgot-password", (req, res) => userController.forgotPassword(req, res));
 //payment
