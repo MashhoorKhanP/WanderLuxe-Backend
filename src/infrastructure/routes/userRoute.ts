@@ -122,7 +122,7 @@ router.patch("/my-bookings/cancel-booking/:bookingId", (req, res) =>
   bookingController.updateBooking(req, res)
 );
 
-router.patch("/add-remove/wishlist", (req, res) =>
+router.patch("/add-remove/wishlist",auth, (req, res) =>
   userController.addRemoveFromWishlist(req, res)
 );
 
