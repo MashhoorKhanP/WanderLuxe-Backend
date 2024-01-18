@@ -137,18 +137,28 @@ class UserUserCase {
           role
         );
 
-      await this.UserRepository.save(newUser);
-
+      const savedUser = await this.UserRepository.save(newUser);
+      const safedUserData = {
+        _id: savedUser._id,
+        firstName: savedUser.firstName,
+        lastName: savedUser.lastName,
+        email: savedUser.email,
+        profileImage: savedUser.profileImage,
+        isVerified: savedUser.isVerified,
+        isBlocked: savedUser.isBlocked,
+        isGoogle: savedUser.isGoogle,
+        wishlist: savedUser.wishlist,
+        wallet: savedUser.wallet,
+        mobile: savedUser.mobile,
+        walletHistory: savedUser.walletHistory,
+      };
       return {
         status: 200,
         data: {
           status: true,
           success: true,
           message: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            profileImage: user.profileImage,
+            ...safedUserData
           },
           token,
         },
