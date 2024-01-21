@@ -61,11 +61,13 @@ class SocketManager {
         };
         this.httpServer = httpServer;
         this.userRespository = userRepository;
-        this.io = new socket_io_1.Server(httpServer, {
-            cors: {
-                origin: '*',
-            },
-        });
+        this.io = new socket_io_1.Server(httpServer
+        // , {
+        //   cors: {
+        //     origin: process.env.CLIENT_URL, cors issue nginx
+        //   },
+        // }
+        );
         this.io.on("connection", this.handleConnection);
     }
     addUser(userId, socketId) {
