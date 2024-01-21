@@ -63,7 +63,7 @@ class SocketManager {
         this.userRespository = userRepository;
         this.io = new socket_io_1.Server(httpServer, {
             cors: {
-                origin: process.env.CLIENT_URL,
+                origin: '*',
             },
         });
         this.io.on("connection", this.handleConnection);

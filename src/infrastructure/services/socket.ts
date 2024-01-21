@@ -18,7 +18,7 @@ export class SocketManager {
     this.userRespository = userRepository;
     this.io = new Server(httpServer, {
       cors: {
-        origin: process.env.CLIENT_URL,
+        origin: '*',
       },
     });
 
