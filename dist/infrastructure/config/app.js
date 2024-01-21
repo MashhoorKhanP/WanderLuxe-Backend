@@ -20,6 +20,8 @@ const createServer = () => {
         const app = (0, express_1.default)();
         app.use((0, cors_1.default)({
             origin: process.env.CLIENT_URL,
+            methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            allowedHeaders: "X-Requested-With, Content-Type, Authorization",
             credentials: true,
         }));
         app.options("*", (0, cors_1.default)());
