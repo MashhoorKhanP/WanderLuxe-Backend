@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createServer = void 0;
 const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
+// import cors from "cors";
 const http_1 = __importDefault(require("http"));
 const userRoute_1 = __importDefault(require("../routes/userRoute"));
 const adminRoute_1 = __importDefault(require("../routes/adminRoute"));
@@ -18,11 +18,14 @@ dotenv_1.default.config();
 const createServer = () => {
     try {
         const app = (0, express_1.default)();
-        app.use((0, cors_1.default)({
-            origin: process.env.CLIENT_URL,
-            credentials: true,
-        }));
-        app.options("*", (0, cors_1.default)());
+        /** Cor setted on nginx so no need to set here */
+        // app.use(
+        //   cors({
+        //     origin: process.env.CLIENT_URL,
+        //     credentials: true,
+        //   }) 
+        // );
+        // app.options("*", cors());
         app.use(express_1.default.json({ limit: "10mb" }));
         app.use(express_1.default.urlencoded({ extended: true }));
         app.use(express_1.default.static(path_1.default.join(__dirname, "../public")));

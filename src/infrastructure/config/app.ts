@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors";
+// import cors from "cors";
 import http from "http";
 import userRoute from "../routes/userRoute";
 import adminRoute from "../routes/adminRoute";
@@ -13,14 +13,14 @@ dotenv.config();
 export const createServer = () => {
   try {
     const app = express();
-
-    app.use(
-      cors({
-        origin: process.env.CLIENT_URL,
-        credentials: true,
-      })
-    );
-    app.options("*", cors());
+    /** Cor setted on nginx so no need to set here */
+    // app.use(
+    //   cors({
+    //     origin: process.env.CLIENT_URL,
+    //     credentials: true,
+    //   }) 
+    // );
+    // app.options("*", cors());
 
     app.use(express.json({ limit: "10mb" }));
     app.use(express.urlencoded({ extended: true }));
