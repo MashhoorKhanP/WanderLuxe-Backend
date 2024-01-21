@@ -19,7 +19,7 @@ const createServer = () => {
     try {
         const app = (0, express_1.default)();
         app.use((0, cors_1.default)({
-            origin: 'https://wander-luxe-hotels.vercel.app',
+            origin: '*',
             credentials: true,
         }));
         app.options("*", (0, cors_1.default)());
